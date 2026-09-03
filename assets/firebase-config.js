@@ -11,10 +11,10 @@
 // -------------------------------------------------------------------------
 
 export const firebaseConfig = {
-  apiKey: "PASTE_apiKey_HERE",
-  authDomain: "PASTE_authDomain_HERE",
-  projectId: "PASTE_projectId_HERE",
-  storageBucket: "PASTE_storageBucket_HERE",
-  messagingSenderId: "PASTE_messagingSenderId_HERE",
-  appId: "PASTE_appId_HERE"
+  apiKey: "AIzaSyA51KhCE_Z0Ouew-DnFVi8nY5NUwFJDUr4",
+  authDomain: "theflyingcocker.firebaseapp.com",
+  projectId: "theflyingcocker",
+  storageBucket: "theflyingcocker.firebasestorage.app",
+  messagingSenderId: "474580111901",
+  appId: "1:474580111901:web:e504edf74a314e86f56cf4"
 };
