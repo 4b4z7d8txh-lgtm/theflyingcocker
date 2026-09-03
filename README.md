@@ -8,10 +8,14 @@ kept out.
 
 | File | Purpose |
 |------|---------|
-| `index.html` | Login landing page (username + password). |
+| `index.html` | The login landing page (the "Flying Cocker" design), now wired to sign in. |
 | `members.html` | The protected site behind the login. |
 | `assets/auth.js` | The list of approved users and the sign-in logic. |
-| `assets/style.css` | Styling for both pages. |
+| `assets/img/portrait.jpg` | The portrait shown on the login card. |
+
+The landing page uses the "The Flying Cocker — Authorised access only" design
+(built in Claude Design); its **Log in** button is now connected to the login
+logic below, and each page's styling is inlined in the page itself.
 
 ## How it works
 

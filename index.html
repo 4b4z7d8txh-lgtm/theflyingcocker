@@ -1,59 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Flying Cocker &middot; Sign In</title>
-  <link rel="stylesheet" href="assets/style.css" />
+  <title>The Flying Cocker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Work+Sans:wght@400;500;600&display=swap" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: #faf7f2;
+    }
+    a { color: #b4552f; text-decoration: none; }
+    a:hover { color: #8f3f21; }
+    input::placeholder { color: #b8ab99; }
+
+    .card {
+      width: 100%;
+      max-width: 384px;
+      background: #ffffff;
+      border: 1px solid #efe7db;
+      border-radius: 18px;
+      box-shadow: 0 1px 2px rgba(58,42,28,0.04), 0 24px 48px -20px rgba(58,42,28,0.16);
+      padding: 44px 44px 40px;
+    }
+    .head { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .avatar {
+      width: 120px; height: 120px; border-radius: 50%; overflow: hidden;
+      border: 4px solid #ffffff;
+      box-shadow: 0 0 0 1px #ebe0d1, 0 10px 24px -8px rgba(58,42,28,0.28);
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .titles { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+    h1 {
+      margin: 0;
+      font-family: "Newsreader", Georgia, "Times New Roman", serif;
+      font-weight: 500; font-size: 27px; letter-spacing: 0.005em;
+      color: #2c2620; text-align: center; line-height: 1.15;
+    }
+    .eyebrow {
+      margin: 0; font-size: 11.5px; font-weight: 600; letter-spacing: 0.13em;
+      text-transform: uppercase; color: #a99c88;
+    }
+    form { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    label { font-size: 12.5px; font-weight: 500; color: #6f665a; }
+    input {
+      height: 46px; padding: 0 14px; font-size: 15px; font-family: inherit;
+      color: #2c2620; background: #fcfaf7; border: 1px solid #e4d9c9;
+      border-radius: 10px; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    input:focus {
+      border-color: #c15f3c; box-shadow: 0 0 0 3px rgba(193,95,60,0.15); background: #ffffff;
+    }
+    button {
+      margin-top: 8px; height: 48px; border: none; border-radius: 10px;
+      background: #c15f3c; color: #fff; font-family: inherit; font-size: 15px;
+      font-weight: 600; letter-spacing: 0.01em; cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover { background: #a84e30; }
+    .error {
+      margin: 0; text-align: center; font-size: 13px; color: #b23b2e;
+      min-height: 1px;
+    }
+    .hint { margin: 18px 0 0; text-align: center; font-size: 12px; color: #a99c88; }
+  </style>
 </head>
-<body class="auth-page">
+<body>
   <main class="card" role="main">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true">&#128038;</span>
-      <h1>The Flying Cocker</h1>
-      <p class="tagline">Members only. Please sign in to continue.</p>
+    <div class="head">
+      <div class="avatar">
+        <img src="assets/img/portrait.jpg" alt="The Flying Cocker" />
+      </div>
+      <div class="titles">
+        <h1>The Flying Cocker</h1>
+        <p class="eyebrow">Authorised access only</p>
+      </div>
     </div>
 
     <form id="login-form" novalidate>
-      <label for="username">Username</label>
-      <input id="username" name="username" type="text" autocomplete="username"
-             required autofocus placeholder="Your username" />
+      <div class="field">
+        <label for="fc-user">Username</label>
+        <input id="fc-user" type="text" autocomplete="username"
+               placeholder="you@theflyingcocker.com" required autofocus />
+      </div>
 
-      <label for="password">Password</label>
-      <input id="password" name="password" type="password" autocomplete="current-password"
-             required placeholder="Your password" />
+      <div class="field">
+        <label for="fc-pass">Password</label>
+        <input id="fc-pass" type="password" autocomplete="current-password"
+               placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required />
+      </div>
 
       <p id="error" class="error" role="alert" hidden></p>
 
-      <button type="submit">Sign in</button>
+      <button type="submit">Log in</button>
     </form>
 
-    <p class="hint">Trouble signing in? Contact the site owner for an approved account.</p>
+    <p class="hint">Need access? Contact the site owner for an approved account.</p>
   </main>
 
   <script src="assets/auth.js"></script>
   <script>
+    // If already signed in, skip straight to the members area.
+    if (Auth.currentUser()) {
+      window.location.replace('members.html');
+    }
+
     document.getElementById('login-form').addEventListener('submit', function (e) {
       e.preventDefault();
       var error = document.getElementById('error');
-      var username = document.getElementById('username').value.trim();
-      var password = document.getElementById('password').value;
+      var username = document.getElementById('fc-user').value.trim();
+      var password = document.getElementById('fc-pass').value;
 
-      var user = Auth.signIn(username, password);
-      if (user) {
+      if (Auth.signIn(username, password)) {
         window.location.href = 'members.html';
       } else {
         error.textContent = 'Incorrect username or password.';
         error.hidden = false;
-        document.getElementById('password').value = '';
-        document.getElementById('password').focus();
+        var pass = document.getElementById('fc-pass');
+        pass.value = '';
+        pass.focus();
       }
     });
-
-    // If already signed in, skip the login screen.
-    if (Auth.currentUser()) {
-      window.location.href = 'members.html';
-    }
   </script>
 </body>
 </html>
