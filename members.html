@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Flying Cocker &middot; Members</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <script src="assets/auth.js"></script>
+  <script>
+    // Gate: bounce anyone who is not signed in straight back to the login page.
+    if (!Auth.currentUser()) {
+      window.location.replace('index.html');
+    }
+  </script>
+</head>
+<body class="app-page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <span class="brand-inline"><span aria-hidden="true">&#128038;</span> The Flying Cocker</span>
+      <div class="topbar-right">
+        <span id="welcome" class="welcome"></span>
+        <button id="signout" class="ghost">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="content" role="main">
+    <h1>Welcome to the club</h1>
+    <p class="lead">You're signed in. This is the members-only area of the site &mdash;
+       replace this content with whatever your approved members should see.</p>
+
+    <section class="grid">
+      <article class="tile">
+        <h2>Announcements</h2>
+        <p>Post news and updates for members here.</p>
+      </article>
+      <article class="tile">
+        <h2>Resources</h2>
+        <p>Share files, links, and downloads with the group.</p>
+      </article>
+      <article class="tile">
+        <h2>Events</h2>
+        <p>List upcoming meetups, dates, and details.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <small>The Flying Cocker &middot; Members area</small>
+  </footer>
+
+  <script>
+    var user = Auth.currentUser();
+    if (user) {
+      document.getElementById('welcome').textContent = 'Signed in as ' + user;
+    }
+    document.getElementById('signout').addEventListener('click', function () {
+      Auth.signOut();
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

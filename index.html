@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Flying Cocker &middot; Sign In</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body class="auth-page">
+  <main class="card" role="main">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">&#128038;</span>
+      <h1>The Flying Cocker</h1>
+      <p class="tagline">Members only. Please sign in to continue.</p>
+    </div>
+
+    <form id="login-form" novalidate>
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" autocomplete="username"
+             required autofocus placeholder="Your username" />
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password"
+             required placeholder="Your password" />
+
+      <p id="error" class="error" role="alert" hidden></p>
+
+      <button type="submit">Sign in</button>
+    </form>
+
+    <p class="hint">Trouble signing in? Contact the site owner for an approved account.</p>
+  </main>
+
+  <script src="assets/auth.js"></script>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var error = document.getElementById('error');
+      var username = document.getElementById('username').value.trim();
+      var password = document.getElementById('password').value;
+
+      var user = Auth.signIn(username, password);
+      if (user) {
+        window.location.href = 'members.html';
+      } else {
+        error.textContent = 'Incorrect username or password.';
+        error.hidden = false;
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+      }
+    });
+
+    // If already signed in, skip the login screen.
+    if (Auth.currentUser()) {
+      window.location.href = 'members.html';
+    }
+  </script>
+</body>
+</html>
