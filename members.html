@@ -8,13 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Work+Sans:wght@400;500;600&display=swap" />
-  <script src="assets/auth.js"></script>
-  <script>
-    // Gate: bounce anyone who is not signed in back to the login page.
-    if (!Auth.currentUser()) {
-      window.location.replace('index.html');
-    }
-  </script>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -50,64 +43,90 @@
       margin: 0 0 10px; font-family: "Newsreader", Georgia, serif;
       font-weight: 500; font-size: 32px; color: #2c2620;
     }
-    .lead { color: #6f665a; margin: 0 0 34px; max-width: 620px; line-height: 1.55; }
-
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
-    .tile {
-      background: #ffffff; border: 1px solid #efe7db; border-radius: 14px; padding: 22px;
-      box-shadow: 0 1px 2px rgba(58,42,28,0.04);
-    }
-    .tile h2 { margin: 0 0 8px; font-size: 17px; font-weight: 600; }
-    .tile p { margin: 0; color: #6f665a; font-size: 14px; line-height: 1.5; }
-
+    .body { color: #4a4238; line-height: 1.6; white-space: pre-wrap; max-width: 640px; }
+    .muted { color: #a99c88; }
     .footer { text-align: center; padding: 24px; color: #a99c88; font-size: 13px; }
+
+    /* Nothing private is shown until we've confirmed the user is signed in. */
+    #app { display: none; }
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <span class="brand">
-        <img src="assets/img/portrait.jpg" alt="" />
-        The Flying Cocker
-      </span>
-      <div class="topbar-right">
-        <span id="welcome" class="welcome"></span>
-        <button id="signout" class="signout">Sign out</button>
+  <div id="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <span class="brand">
+          <img src="assets/img/portrait.jpg" alt="" />
+          The Flying Cocker
+        </span>
+        <div class="topbar-right">
+          <span id="welcome" class="welcome"></span>
+          <button id="signout" class="signout">Sign out</button>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main class="content" role="main">
-    <p class="eyebrow">Members area</p>
-    <h1>Welcome to the club</h1>
-    <p class="lead">You're signed in. This is the members-only area of the site &mdash;
-       replace this content with whatever your approved members should see.</p>
+    <main class="content" role="main">
+      <p class="eyebrow">Members area</p>
+      <h1 id="heading">Welcome</h1>
+      <div id="body" class="body muted">Loading…</div>
+    </main>
 
-    <section class="grid">
-      <article class="tile">
-        <h2>Announcements</h2>
-        <p>Post news and updates for members here.</p>
-      </article>
-      <article class="tile">
-        <h2>Resources</h2>
-        <p>Share files, links, and downloads with the group.</p>
-      </article>
-      <article class="tile">
-        <h2>Events</h2>
-        <p>List upcoming meetups, dates, and details.</p>
-      </article>
-    </section>
-  </main>
+    <footer class="footer">The Flying Cocker &middot; Members area</footer>
+  </div>
 
-  <footer class="footer">The Flying Cocker &middot; Members area</footer>
+  <script type="module">
+    import { firebaseConfig } from './assets/firebase-config.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import {
+      getAuth, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import {
+      getFirestore, doc, getDoc
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-  <script>
-    var user = Auth.currentUser();
-    if (user) {
-      document.getElementById('welcome').textContent = 'Signed in as ' + user;
-    }
-    document.getElementById('signout').addEventListener('click', function () {
-      Auth.signOut();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    setPersistence(auth, browserSessionPersistence);
+
+    const appEl = document.getElementById('app');
+    const heading = document.getElementById('heading');
+    const bodyEl = document.getElementById('body');
+
+    onAuthStateChanged(auth, async (user) => {
+      // Gate: no signed-in user → bounce to the login page.
+      if (!user) {
+        window.location.replace('index.html');
+        return;
+      }
+
+      document.getElementById('welcome').textContent = 'Signed in as ' + user.email;
+      appEl.style.display = 'block';
+
+      // Load the PRIVATE content from Firestore. The security rules only allow
+      // this read for a signed-in user, so the content is never exposed to the
+      // public — even though this HTML file is.
+      try {
+        const snap = await getDoc(doc(db, 'members', 'home'));
+        if (snap.exists()) {
+          const data = snap.data();
+          heading.textContent = data.heading || 'Welcome to the club';
+          bodyEl.textContent = data.body || '';
+          bodyEl.classList.remove('muted');
+        } else {
+          heading.textContent = 'Welcome to the club';
+          bodyEl.textContent = 'No content yet. Add a document at members/home in '
+            + 'Firestore (see SETUP.md) and it will appear here.';
+        }
+      } catch (err) {
+        bodyEl.textContent = 'Could not load members content. Check your Firestore '
+          + 'rules and that the members/home document exists (see SETUP.md).';
+      }
+    });
+
+    document.getElementById('signout').addEventListener('click', async () => {
+      await signOut(auth);
       window.location.href = 'index.html';
     });
   </script>

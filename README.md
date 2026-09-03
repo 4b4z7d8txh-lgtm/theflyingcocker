@@ -1,57 +1,51 @@
 # The Flying Cocker
 
-A small members-only website: a login landing page (`index.html`) that lets
-**approved accounts** into the members area (`members.html`). Everyone else is
-kept out.
+A small members-only website with **real, server-enforced login** via Firebase
+Authentication. Approved accounts (that only you can create) sign in on
+`index.html` and reach the members area (`members.html`); the private content
+lives in Firestore and is released only to a signed-in user.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `index.html` | The login landing page (the "Flying Cocker" design), now wired to sign in. |
-| `members.html` | The protected site behind the login. |
-| `assets/auth.js` | The list of approved users and the sign-in logic. |
+| `index.html` | The login landing page (the "Flying Cocker" design), wired to Firebase sign-in. |
+| `members.html` | The members area — verifies the login and loads private content from Firestore. |
+| `assets/firebase-config.js` | Your Firebase project config (you paste this in — see SETUP.md). |
 | `assets/img/portrait.jpg` | The portrait shown on the login card. |
-
-The landing page uses the "The Flying Cocker — Authorised access only" design
-(built in Claude Design); its **Log in** button is now connected to the login
-logic below, and each page's styling is inlined in the page itself.
+| `firestore.rules` | Security rules that protect the members content on the server. |
+| `SETUP.md` | **Start here** — step-by-step Firebase setup (about 15 min, no coding). |
 
 ## How it works
 
-1. A visitor enters a username and password on `index.html`.
-2. If they match an approved account, they're sent to `members.html`.
-3. `members.html` checks that the visitor is signed in — if not, it sends them
-   back to the login page.
-4. The **Sign out** button clears the session.
+1. A member enters their email (the "Username" field) and password on `index.html`.
+2. Firebase verifies the password **on Google's servers** and signs them in.
+3. `members.html` confirms the session, then fetches the private content from
+   **Firestore**, which its security rules release only to a signed-in user.
+4. Anyone not signed in is bounced back to the login page and can't read the
+   content even by requesting it directly.
 
-## Adding or changing users
+## Getting it running
 
-Open `assets/auth.js` and edit the `APPROVED_USERS` list:
+Follow **[SETUP.md](SETUP.md)**. In short: create a free Firebase project, turn
+on Email/Password login, disable public sign-up, add your members, paste your
+config into `assets/firebase-config.js`, publish the Firestore rules, and add
+your content. **The login won't work until SETUP.md is done.**
 
-```js
-var APPROVED_USERS = [
-  { username: 'admin',  password: 'change-me-please' },
-  { username: 'jane',   password: 'a-good-password'  }
-];
-```
+## Managing members
 
-**Change the default passwords before you publish the site.**
+In the Firebase console → **Authentication → Users**: **Add user** to approve
+someone, delete a user to revoke access. No code changes needed.
 
 ## Publishing
 
-These are plain static files, so any static host works. The easiest is
-**GitHub Pages**: in the repo, go to *Settings → Pages*, choose your branch,
-and the site is live at `https://<you>.github.io/theflyingcocker/`.
+Because the private data lives in Firestore (not in these files), you can host
+the files on **any** static host — Firebase Hosting, GitHub Pages, Netlify — and
+the security travels with the data. See SETUP.md step 9.
 
-## A note on security
+## Why this is secure
 
-The login is checked **in the browser**, which means the passwords in
-`auth.js` are visible to anyone who views the page source. This is enough to
-give members a private space and keep casual visitors out, but it is **not**
-real security — do not use it to protect sensitive or valuable information.
-
-If you need genuine protection (passwords that can't be seen, real accounts),
-the login has to be verified on a **server**. Options include Netlify Identity,
-Auth0, Firebase Authentication, Cloudflare Access, or a small backend of your
-own. I'm happy to set one of those up if you'd like.
+Passwords are never stored in the site files; Firebase checks them server-side.
+The members content is served by Firestore only to a signed-in account, enforced
+by a rule that runs on Google's servers — so editing the page can't bypass it.
+And only accounts you create can log in.

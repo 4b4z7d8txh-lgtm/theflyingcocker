@@ -110,27 +110,47 @@
     <p class="hint">Need access? Contact the site owner for an approved account.</p>
   </main>
 
-  <script src="assets/auth.js"></script>
-  <script>
+  <script type="module">
+    import { firebaseConfig } from './assets/firebase-config.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import {
+      getAuth, signInWithEmailAndPassword, onAuthStateChanged, setPersistence,
+      browserSessionPersistence
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+    const auth = getAuth(initializeApp(firebaseConfig));
+    // Keep the session only until the browser tab is closed.
+    setPersistence(auth, browserSessionPersistence);
+
+    const form = document.getElementById('login-form');
+    const error = document.getElementById('error');
+    const button = form.querySelector('button');
+
     // If already signed in, skip straight to the members area.
-    if (Auth.currentUser()) {
-      window.location.replace('members.html');
-    }
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.replace('members.html');
+    });
 
-    document.getElementById('login-form').addEventListener('submit', function (e) {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      var error = document.getElementById('error');
-      var username = document.getElementById('fc-user').value.trim();
-      var password = document.getElementById('fc-pass').value;
+      error.hidden = true;
+      const email = document.getElementById('fc-user').value.trim();
+      const password = document.getElementById('fc-pass').value;
 
-      if (Auth.signIn(username, password)) {
+      button.disabled = true;
+      button.textContent = 'Signing in…';
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
         window.location.href = 'members.html';
-      } else {
+      } catch (err) {
+        // Show one generic message so we don't reveal which field was wrong.
         error.textContent = 'Incorrect username or password.';
         error.hidden = false;
-        var pass = document.getElementById('fc-pass');
+        const pass = document.getElementById('fc-pass');
         pass.value = '';
         pass.focus();
+        button.disabled = false;
+        button.textContent = 'Log in';
       }
     });
   </script>
