@@ -30,15 +30,27 @@ The login page is served at the site **root** (`/`). The old mockup is kept as
 ```
 /var/www/html/
   index.html                 <- login page (Firebase email/password sign-in)
-  members.html               <- protected page; loads private content from Firestore
+  members.html               <- protected members home; loads content from Firestore
+  minecraps.html             <- protected sub-page: family Minecraft server info
   assets/
     firebase-config.js       <- Firebase web config (public by design)
+    members-guard.js         <- shared login gate imported by every members page
+    members.css              <- shared members-area styling (topbar, nav, footer)
     img/portrait.jpg         <- the login portrait
   index.html.mockup.bak      <- backup of the original mockup (not served as a page)
 ```
 
-Any new protected sub-pages (e.g. `events.html`) go in `/var/www/html/` too, and
-must include the same "redirect to login if not signed in" check as `members.html`.
+Any new protected sub-page goes in `/var/www/html/` too. The easy, repeatable
+recipe: copy `minecraps.html` as a starting point, link `assets/members.css`, and
+call `guardMembersPage()` from `assets/members-guard.js` — that single shared
+module does the "redirect to login if not signed in" check, reveals the page and
+wires up Sign out. Then add a link to the new page in the `<nav>` of the other
+members pages.
+
+> The actual **Minecraft (Bedrock) game server** is a separate program on the
+> VPS, not a web page — see **[MINECRAFT-SERVER.md](MINECRAFT-SERVER.md)** to set
+> it up (`mc.theflyingcocker.co.uk`, UDP 19132). `minecraps.html` is just the
+> members page that shows the kids how to connect.
 
 ---
 
@@ -47,7 +59,8 @@ must include the same "redirect to login if not signed in" check as `members.htm
 All site changes are committed to GitHub first, then pulled onto the server.
 
 - **Repo:** `4b4z7d8txh-lgtm/theflyingcocker`
-- **Branch:** `claude/landing-page-login-rghgnd`
+- **Branch:** `claude/flying-cocker-sub-pages-4kdpni` (current active branch —
+  the members sub-pages work lives here)
 - Because the repo files are publicly readable, the server downloads them with
   `curl` from the raw GitHub URL — no keys or passwords needed.
 
@@ -58,10 +71,10 @@ the whole block:
 
 ```bash
 cd /var/www/html
-BASE="https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/landing-page-login-rghgnd"
+BASE="https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/flying-cocker-sub-pages-4kdpni"
 
 # List the files to (re)download — add new sub-pages here as you create them:
-FILES="index.html members.html assets/firebase-config.js assets/img/portrait.jpg"
+FILES="index.html members.html minecraps.html assets/firebase-config.js assets/members-guard.js assets/members.css assets/img/portrait.jpg"
 
 for f in $FILES; do
   mkdir -p "$(dirname "$f")"

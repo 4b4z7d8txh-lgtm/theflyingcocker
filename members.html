@@ -8,48 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Work+Sans:wght@400;500;600&display=swap" />
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; min-height: 100vh; display: flex; flex-direction: column;
-      font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-      color: #2c2620; background: #faf7f2;
-    }
-    .topbar { background: #ffffff; border-bottom: 1px solid #efe7db; }
-    .topbar-inner {
-      max-width: 960px; margin: 0 auto; padding: 16px 22px;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    }
-    .brand {
-      display: flex; align-items: center; gap: 11px;
-      font-family: "Newsreader", Georgia, serif; font-size: 19px; color: #2c2620;
-    }
-    .brand img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
-    .topbar-right { display: flex; align-items: center; gap: 14px; }
-    .welcome { font-size: 13px; color: #a99c88; }
-    .signout {
-      padding: 8px 15px; background: transparent; border: 1px solid #e4d9c9;
-      color: #6f665a; font-family: inherit; font-size: 13px; font-weight: 500;
-      border-radius: 9px; cursor: pointer; transition: background 0.15s, border-color 0.15s;
-    }
-    .signout:hover { background: #fcfaf7; border-color: #c15f3c; color: #c15f3c; }
-
-    .content { max-width: 960px; margin: 0 auto; padding: 48px 22px; flex: 1; width: 100%; }
-    .eyebrow {
-      margin: 0 0 10px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.13em;
-      text-transform: uppercase; color: #a99c88;
-    }
-    h1 {
-      margin: 0 0 10px; font-family: "Newsreader", Georgia, serif;
-      font-weight: 500; font-size: 32px; color: #2c2620;
-    }
-    .body { color: #4a4238; line-height: 1.6; white-space: pre-wrap; max-width: 640px; }
-    .muted { color: #a99c88; }
-    .footer { text-align: center; padding: 24px; color: #a99c88; font-size: 13px; }
-
-    /* Nothing private is shown until we've confirmed the user is signed in. */
-    #app { display: none; }
-  </style>
+  <link rel="stylesheet" href="assets/members.css" />
 </head>
 <body>
   <div id="app">
@@ -59,6 +18,10 @@
           <img src="assets/img/portrait.jpg" alt="" />
           The Flying Cocker
         </span>
+        <nav class="nav">
+          <a href="members.html" class="active">Home</a>
+          <a href="minecraps.html">Minecraps</a>
+        </nav>
         <div class="topbar-right">
           <span id="welcome" class="welcome"></span>
           <button id="signout" class="signout">Sign out</button>
@@ -76,37 +39,21 @@
   </div>
 
   <script type="module">
-    import { firebaseConfig } from './assets/firebase-config.js';
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import {
-      getAuth, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence
-    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { guardMembersPage } from './assets/members-guard.js';
     import {
       getFirestore, doc, getDoc
     } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    setPersistence(auth, browserSessionPersistence);
-
-    const appEl = document.getElementById('app');
     const heading = document.getElementById('heading');
     const bodyEl = document.getElementById('body');
 
-    onAuthStateChanged(auth, async (user) => {
-      // Gate: no signed-in user → bounce to the login page.
-      if (!user) {
-        window.location.replace('index.html');
-        return;
-      }
-
-      document.getElementById('welcome').textContent = 'Signed in as ' + user.email;
-      appEl.style.display = 'block';
-
-      // Load the PRIVATE content from Firestore. The security rules only allow
-      // this read for a signed-in user, so the content is never exposed to the
-      // public — even though this HTML file is.
+    // The shared guard checks the login, reveals the page and wires sign-out.
+    // Once a signed-in user is confirmed, load the PRIVATE content from
+    // Firestore. The security rules only allow this read for a signed-in user,
+    // so the content is never exposed to the public — even though this HTML
+    // file is.
+    guardMembersPage(async (user, app) => {
+      const db = getFirestore(app);
       try {
         const snap = await getDoc(doc(db, 'members', 'home'));
         if (snap.exists()) {
@@ -123,11 +70,6 @@
         bodyEl.textContent = 'Could not load members content. Check your Firestore '
           + 'rules and that the members/home document exists (see SETUP.md).';
       }
-    });
-
-    document.getElementById('signout').addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.href = 'index.html';
     });
   </script>
 </body>

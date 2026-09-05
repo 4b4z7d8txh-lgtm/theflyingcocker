@@ -1,0 +1,79 @@
+/* -------------------------------------------------------------------------
+   Shared styling for The Flying Cocker members area
+   -------------------------------------------------------------------------
+   The chrome that every members page has in common: the top bar, the nav,
+   the page shell and the footer. Individual pages add their own page-specific
+   styles inline. Colours and fonts match the login page (index.html):
+   cream/terracotta palette, Newsreader + Work Sans.
+   ------------------------------------------------------------------------- */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #2c2620;
+  background: #faf7f2;
+}
+
+a { color: #b4552f; text-decoration: none; }
+a:hover { color: #8f3f21; }
+
+/* --- Top bar ---------------------------------------------------------- */
+.topbar { background: #ffffff; border-bottom: 1px solid #efe7db; }
+.topbar-inner {
+  max-width: 960px; margin: 0 auto; padding: 14px 22px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.brand {
+  display: flex; align-items: center; gap: 11px;
+  font-family: "Newsreader", Georgia, serif; font-size: 19px; color: #2c2620;
+}
+.brand img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
+
+/* --- Nav -------------------------------------------------------------- */
+.nav { display: flex; align-items: center; gap: 4px; }
+.nav a {
+  padding: 7px 13px; border-radius: 9px; font-size: 14px; font-weight: 500;
+  color: #6f665a; transition: background 0.15s, color 0.15s;
+}
+.nav a:hover { background: #f4ede2; color: #2c2620; }
+.nav a.active { background: #f2e3d8; color: #b4552f; }
+
+/* --- Right-hand side (welcome + sign out) ----------------------------- */
+.topbar-right { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.welcome { font-size: 13px; color: #a99c88; }
+.signout {
+  padding: 8px 15px; background: transparent; border: 1px solid #e4d9c9;
+  color: #6f665a; font-family: inherit; font-size: 13px; font-weight: 500;
+  border-radius: 9px; cursor: pointer; transition: background 0.15s, border-color 0.15s;
+}
+.signout:hover { background: #fcfaf7; border-color: #c15f3c; color: #c15f3c; }
+
+/* --- Page shell ------------------------------------------------------- */
+.content { max-width: 960px; margin: 0 auto; padding: 48px 22px; flex: 1; width: 100%; }
+.eyebrow {
+  margin: 0 0 10px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.13em;
+  text-transform: uppercase; color: #a99c88;
+}
+h1 {
+  margin: 0 0 10px; font-family: "Newsreader", Georgia, serif;
+  font-weight: 500; font-size: 32px; color: #2c2620;
+}
+.body { color: #4a4238; line-height: 1.6; white-space: pre-wrap; max-width: 640px; }
+.muted { color: #a99c88; }
+.footer { text-align: center; padding: 24px; color: #a99c88; font-size: 13px; }
+
+/* Nothing private is shown until we've confirmed the user is signed in.
+   members-guard.js flips this to display:block once auth is confirmed. */
+#app { display: none; }
+
+/* --- Small screens ---------------------------------------------------- */
+@media (max-width: 560px) {
+  .topbar-right { width: 100%; margin-left: 0; justify-content: space-between; }
+  .content { padding: 32px 18px; }
+  h1 { font-size: 27px; }
+}

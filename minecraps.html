@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Flying Cocker &middot; Minecraps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Work+Sans:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="assets/members.css" />
+  <style>
+    /* --- Minecraps page-specific styles --- */
+    .lead { color: #4a4238; line-height: 1.6; max-width: 640px; margin: 0 0 30px; }
+
+    .server-card {
+      background: #ffffff; border: 1px solid #efe7db; border-radius: 16px;
+      box-shadow: 0 1px 2px rgba(58,42,28,0.04), 0 18px 40px -22px rgba(58,42,28,0.18);
+      padding: 26px 26px 24px; max-width: 640px; margin: 0 0 34px;
+    }
+    .server-card .row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 14px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    .status {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; color: #6f665a;
+      padding: 6px 12px; border-radius: 999px; background: #f4ede2;
+    }
+    .status .dot {
+      width: 9px; height: 9px; border-radius: 50%; background: #c9bdaa;
+      flex: 0 0 auto;
+    }
+    .status.online .dot  { background: #3fa34d; box-shadow: 0 0 0 3px rgba(63,163,77,0.18); }
+    .status.offline .dot { background: #b23b2e; box-shadow: 0 0 0 3px rgba(178,59,46,0.15); }
+
+    .detail { margin-bottom: 16px; }
+    .detail:last-child { margin-bottom: 0; }
+    .detail .k {
+      font-size: 11.5px; font-weight: 600; letter-spacing: 0.11em;
+      text-transform: uppercase; color: #a99c88; margin: 0 0 5px;
+    }
+    .detail .v-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .detail .v {
+      font-family: "Work Sans", monospace; font-size: 18px; font-weight: 600;
+      color: #2c2620; letter-spacing: 0.01em;
+    }
+    .copy {
+      border: 1px solid #e4d9c9; background: #fcfaf7; color: #6f665a;
+      font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+      padding: 6px 12px; border-radius: 8px; transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .copy:hover { border-color: #c15f3c; color: #c15f3c; background: #fff; }
+    .copy.done { border-color: #3fa34d; color: #3fa34d; }
+
+    h2 {
+      font-family: "Newsreader", Georgia, serif; font-weight: 500;
+      font-size: 22px; color: #2c2620; margin: 0 0 14px;
+    }
+    .section { max-width: 640px; margin: 0 0 34px; }
+    ol.steps { margin: 0; padding-left: 22px; color: #4a4238; line-height: 1.65; }
+    ol.steps li { margin-bottom: 9px; }
+    ol.steps code, .lead code, .rules code {
+      background: #f4ede2; border-radius: 5px; padding: 1px 6px;
+      font-size: 0.92em; color: #8f3f21;
+    }
+    ul.rules { margin: 0; padding-left: 22px; color: #4a4238; line-height: 1.65; }
+    ul.rules li { margin-bottom: 8px; }
+    .note {
+      font-size: 13px; color: #a99c88; line-height: 1.55;
+      border-left: 3px solid #ecd9c8; padding: 2px 0 2px 14px; margin: 16px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <span class="brand">
+          <img src="assets/img/portrait.jpg" alt="" />
+          The Flying Cocker
+        </span>
+        <nav class="nav">
+          <a href="members.html">Home</a>
+          <a href="minecraps.html" class="active">Minecraps</a>
+        </nav>
+        <div class="topbar-right">
+          <span id="welcome" class="welcome"></span>
+          <button id="signout" class="signout">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="content" role="main">
+      <p class="eyebrow">Members area</p>
+      <h1>Minecraps</h1>
+      <p class="lead">
+        Our family Minecraft world, running on the Flying Cocker server so
+        everyone can build together from their own console, phone, tablet or
+        Windows 10/11 device. Add the server once using the details below, then
+        just tap <strong>Join Server</strong> whenever you want to play.
+      </p>
+
+      <!-- Connection details ------------------------------------------- -->
+      <div class="server-card">
+        <div class="row">
+          <h2 style="margin:0;">Server details</h2>
+          <span id="status" class="status"><span class="dot"></span><span id="status-text">Checking…</span></span>
+        </div>
+
+        <div class="detail">
+          <p class="k">Server address</p>
+          <div class="v-line">
+            <span class="v" id="mc-address">mc.theflyingcocker.co.uk</span>
+            <button class="copy" data-copy="mc-address" type="button">Copy</button>
+          </div>
+        </div>
+
+        <div class="detail">
+          <p class="k">Port</p>
+          <div class="v-line">
+            <span class="v" id="mc-port">19132</span>
+            <button class="copy" data-copy="mc-port" type="button">Copy</button>
+          </div>
+        </div>
+
+        <div class="detail">
+          <p class="k">Edition</p>
+          <div class="v-line">
+            <span class="v">Minecraft: Bedrock Edition</span>
+          </div>
+        </div>
+
+        <p class="note">
+          Bedrock is the version on Xbox, PlayStation, Nintendo Switch, iPhone/iPad,
+          Android, and the “Minecraft” app on Windows 10/11. (Java Edition on PC
+          can’t join this one.)
+        </p>
+      </div>
+
+      <!-- How to join -------------------------------------------------- -->
+      <section class="section">
+        <h2>How to join</h2>
+        <ol class="steps">
+          <li>Open Minecraft and press <strong>Play</strong>.</li>
+          <li>Go to the <strong>Servers</strong> tab.</li>
+          <li>Scroll to the bottom and choose <strong>Add Server</strong>.</li>
+          <li>Server Name: <code>Flying Cocker</code> (anything you like).</li>
+          <li>Server Address: <code>mc.theflyingcocker.co.uk</code></li>
+          <li>Port: <code>19132</code></li>
+          <li>Press <strong>Save</strong>, then tap the server to <strong>Join Server</strong>.</li>
+        </ol>
+        <p class="note">
+          First time only: you need to be <em>added to the allow-list</em> before
+          you can get in. Tell the grown-up who runs the server your exact
+          in-game <strong>gamertag</strong> and they’ll add you.
+        </p>
+      </section>
+
+      <!-- House rules -------------------------------------------------- -->
+      <section class="section">
+        <h2>House rules</h2>
+        <ul class="rules">
+          <li>Be kind — no breaking or taking other people’s builds without asking.</li>
+          <li>No griefing and no bad language in chat.</li>
+          <li>Share the fun — help each other build and explore.</li>
+          <li>If something breaks or someone’s being unkind, tell a grown-up.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">The Flying Cocker &middot; Members area</footer>
+  </div>
+
+  <script type="module">
+    import { guardMembersPage } from './assets/members-guard.js';
+
+    // Read the address/port straight from the page so there's a single source
+    // of truth (change it once in the markup above and everything follows).
+    const ADDRESS = document.getElementById('mc-address').textContent.trim();
+    const PORT = document.getElementById('mc-port').textContent.trim();
+
+    // Copy-to-clipboard buttons.
+    document.querySelectorAll('.copy').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const target = document.getElementById(btn.dataset.copy);
+        const text = target ? target.textContent.trim() : '';
+        try {
+          await navigator.clipboard.writeText(text);
+          const original = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.classList.add('done');
+          setTimeout(() => { btn.textContent = original; btn.classList.remove('done'); }, 1500);
+        } catch (e) {
+          // Clipboard blocked (e.g. no HTTPS or permission) — leave the value
+          // on screen for manual copy.
+        }
+      });
+    });
+
+    // Live online/offline badge, via the public mcsrvstat.us status service.
+    // Best-effort only: if it can't be reached we just say so, and it never
+    // affects the connection details above.
+    async function checkStatus() {
+      const badge = document.getElementById('status');
+      const text = document.getElementById('status-text');
+      try {
+        const res = await fetch(
+          'https://api.mcsrvstat.us/bedrock/3/' + encodeURIComponent(ADDRESS + ':' + PORT),
+          { headers: { 'Accept': 'application/json' } }
+        );
+        const data = await res.json();
+        if (data && data.online) {
+          const p = data.players || {};
+          const count = (typeof p.online === 'number' && typeof p.max === 'number')
+            ? ' — ' + p.online + '/' + p.max + ' playing' : '';
+          badge.className = 'status online';
+          text.textContent = 'Online' + count;
+        } else {
+          badge.className = 'status offline';
+          text.textContent = 'Offline';
+        }
+      } catch (e) {
+        badge.className = 'status';
+        text.textContent = 'Status unavailable';
+      }
+    }
+
+    // Gate the page behind the login, then check the server status.
+    guardMembersPage(() => { checkStatus(); });
+  </script>
+</body>
+</html>

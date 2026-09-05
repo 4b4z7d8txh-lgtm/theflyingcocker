@@ -10,11 +10,24 @@ lives in Firestore and is released only to a signed-in user.
 | File | Purpose |
 |------|---------|
 | `index.html` | The login landing page (the "Flying Cocker" design), wired to Firebase sign-in. |
-| `members.html` | The members area — verifies the login and loads private content from Firestore. |
+| `members.html` | The members home — verifies the login and loads private content from Firestore. |
+| `minecraps.html` | Protected sub-page: the family Minecraft (Bedrock) server info and how to join. |
+| `assets/members-guard.js` | Shared login gate imported by every members page (redirect to login, reveal page, sign out). |
+| `assets/members.css` | Shared members-area styling (top bar, nav, footer) so pages stay consistent. |
 | `assets/firebase-config.js` | Your Firebase project config (you paste this in — see SETUP.md). |
 | `assets/img/portrait.jpg` | The portrait shown on the login card. |
 | `firestore.rules` | Security rules that protect the members content on the server. |
-| `SETUP.md` | **Start here** — step-by-step Firebase setup (about 15 min, no coding). |
+| `SETUP.md` | Firebase setup (about 15 min, no coding). |
+| `VPS-SETUP.md` | How the live site is hosted on the VPS, and how to deploy changes. |
+| `MINECRAFT-SERVER.md` | How to run the Bedrock game server on the VPS (`mc.theflyingcocker.co.uk`). |
+
+## Adding another members sub-page
+
+The members area uses one shared login gate, so new protected pages are quick:
+copy `minecraps.html`, link `assets/members.css`, and call `guardMembersPage()`
+from `assets/members-guard.js` (optionally with a callback to load data once
+sign-in is confirmed). Then add a link to it in the `<nav>` of the other members
+pages. Every page is protected by the same server-enforced Firebase check.
 
 ## How it works
 
