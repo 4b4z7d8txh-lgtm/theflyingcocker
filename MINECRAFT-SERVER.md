@@ -283,6 +283,43 @@ into `/opt/minecraft-bedrock`, `chown -R minecraft:minecraft`, then start again.
 | Downloaded file won't unzip | You saved the HTML page, not the zip → redownload with the `-A "Mozilla/5.0"` flag and a fresh copied link. |
 | Status badge stuck “Offline” on the page | Server not running, port closed, or the status service is briefly down — the badge is informational only; try connecting in-game to confirm. |
 
+### “It shows Offline and the kids can’t join” — diagnose in this order
+
+First, know what the two failures look like, because they need different fixes:
+
+- **Page shows Offline** → nothing is answering on UDP 19132, so it’s a
+  *reachability* problem: the server isn’t running, or a firewall is blocking
+  the port. (This is the usual case.)
+- **Page shows Online but the game says “You are not allowed to join”** → the
+  server is fine and reachable; the gamertag just isn’t on the allow-list. Fix
+  `allowlist.json` (step 6), don’t touch firewalls.
+
+For the **Offline** case, on the VPS (`ssh root@YOUR_SERVER_IP`) work top to
+bottom and stop at the first thing that’s wrong:
+
+```bash
+# 1. Is the server process running at all?
+systemctl status minecraft-bedrock --no-pager
+journalctl -u minecraft-bedrock -n 50 --no-pager   # if dead/crashing, why
+#    Not installed yet? You still need steps 3–7 above.
+
+# 2. Is it actually listening on UDP 19132?
+ss -lunp | grep 19132        # expect a line showing *:19132
+
+# 3. DNS pointing at this box? (compare to `curl -4 ifconfig.me` here)
+getent hosts mc.theflyingcocker.co.uk   # or: dig +short mc.theflyingcocker.co.uk
+
+# 4. OS firewall open for the game port?
+ufw status verbose           # if active, must list: 19132/udp ALLOW
+ufw allow 19132/udp          # add if missing (see step 2)
+```
+
+> **Provider firewall gotcha:** opening `ufw` on the box is not enough if the
+> hosting provider blocks the port upstream. If the process is running and
+> listening (steps 1–2 pass) but the world is still Offline, check the
+> **Fasthosts control panel** for any network/cloud firewall on this VPS and
+> make sure **inbound UDP 19132** is allowed there too.
+
 ---
 
 ## Upgrading later
