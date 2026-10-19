@@ -35,6 +35,7 @@ The login page is served at the site **root** (`/`). The old mockup is kept as
   assets/
     firebase-config.js       <- Firebase web config (public by design)
     members-guard.js         <- shared login gate imported by every members page
+    session.js               <- admin check + single sign-on for the subdomains
     members.css              <- shared members-area styling (topbar, nav, footer)
     img/portrait.jpg         <- the login portrait
   index.html.mockup.bak      <- backup of the original mockup (not served as a page)
@@ -74,7 +75,7 @@ cd /var/www/html
 BASE="https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/flying-cocker-sub-pages-4kdpni"
 
 # List the files to (re)download — add new sub-pages here as you create them:
-FILES="index.html members.html minecraps.html assets/firebase-config.js assets/members-guard.js assets/members.css assets/img/portrait.jpg"
+FILES="index.html members.html minecraps.html assets/firebase-config.js assets/members-guard.js assets/session.js assets/members.css assets/img/portrait.jpg"
 
 for f in $FILES; do
   mkdir -p "$(dirname "$f")"
@@ -100,6 +101,9 @@ echo "Done. Current files:"; ls -laR /var/www/html
 ---
 
 ## Authentication (Firebase) — reference
+
+> Admin vs member roles and the single sign-on for `wf.`/`ob.` are covered in
+> **[SUBDOMAINS.md](SUBDOMAINS.md)**.
 
 - **Firebase project id:** `theflyingcocker`
 - **Sign-in:** Email/Password. Public sign-up is **disabled** — only the owner

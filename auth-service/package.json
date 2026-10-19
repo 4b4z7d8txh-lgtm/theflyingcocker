@@ -1,0 +1,16 @@
+{
+  "name": "fc-auth",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Single sign-on cookie + Nginx auth_request check for theflyingcocker.co.uk subdomains",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}

@@ -4,7 +4,8 @@ rules_version = '2';
 //
 // These run on Google's servers, not in the browser, so they cannot be
 // bypassed by editing the page. They release the private `members` content
-// ONLY to a signed-in user, and never allow writes from the website
+// ONLY to the site admin (the `admin` custom claim, set with
+// auth-service/set-admin.js), and never allow writes from the website
 // (you edit content in the Firebase console instead).
 //
 // Paste these into: Firebase console -> Firestore Database -> Rules -> Publish.
@@ -12,10 +13,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Private members content: readable only when signed in; never writable
+    // Private members content: readable only by the admin; never writable
     // from the client.
     match /members/{document} {
-      allow read: if request.auth != null;
+      allow read: if request.auth != null && request.auth.token.admin == true;
       allow write: if false;
     }
 

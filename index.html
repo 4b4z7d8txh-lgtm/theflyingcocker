@@ -112,6 +112,9 @@
 
   <script type="module">
     import { firebaseConfig } from './assets/firebase-config.js';
+    import {
+      isAdmin, syncServerSession, nextUrl, ADMIN_HOME, MEMBER_HOME
+    } from './assets/session.js';
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
     import {
       getAuth, signInWithEmailAndPassword, onAuthStateChanged, setPersistence,
@@ -126,9 +129,18 @@
     const error = document.getElementById('error');
     const button = form.querySelector('button');
 
-    // If already signed in, skip straight to the members area.
-    onAuthStateChanged(auth, (user) => {
-      if (user) window.location.replace('members.html');
+    // Once signed in (just now, or already), send each person where they
+    // belong: the admin gets the subdomain sign-on cookie and goes back to the
+    // subdomain they came from (?next=) or the members home; everyone else
+    // goes to Minecraps.
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+      if (await isAdmin(user)) {
+        await syncServerSession(user);
+        window.location.replace(nextUrl() || ADMIN_HOME);
+      } else {
+        window.location.replace(MEMBER_HOME);
+      }
     });
 
     form.addEventListener('submit', async (e) => {
@@ -140,8 +152,8 @@
       button.disabled = true;
       button.textContent = 'Signing in…';
       try {
+        // On success, onAuthStateChanged above does the redirect.
         await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = 'members.html';
       } catch (err) {
         // Show one generic message so we don't reveal which field was wrong.
         error.textContent = 'Incorrect username or password.';
