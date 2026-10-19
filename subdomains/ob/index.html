@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Flying Cocker &middot; Vault</title>
+  <meta name="description" content="The Flying Cocker’s Obsidian vault — notes and ideas, open in any browser." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,500&family=Work+Sans:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="assets/landing.css" />
+  <style>
+    /* The vault takes a plum accent (a nod to Obsidian) within the site palette. */
+    :root { --accent: #7a4f8c; --accent-hover: #643f74; --accent-soft: rgba(122,79,140,0.12); }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="https://www.theflyingcocker.co.uk">
+        <img src="assets/img/portrait.jpg" alt="" />
+        The Flying Cocker
+        <span class="sub">ob</span>
+      </a>
+      <a class="topbar-link" href="https://www.theflyingcocker.co.uk">Main site &rarr;</a>
+    </div>
+  </header>
+
+  <main class="content" role="main">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">The vault</p>
+        <h1>A second brain, <em>open in any browser</em>.</h1>
+        <p class="lead">
+          The Flying Cocker’s <strong>Obsidian</strong> vault — notes, plans and
+          half-formed ideas, all linked together. It runs on our own server, so
+          the same vault is waiting on the laptop, the tablet or a borrowed
+          computer, with nothing to install.
+        </p>
+        <div class="actions">
+          <!-- APP_URL: where the browser-based Obsidian is served. See SUBDOMAINS.md. -->
+          <a class="btn btn-primary" href="/app/">
+            Open the vault
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="https://help.obsidian.md" target="_blank" rel="noopener">Obsidian help</a>
+        </div>
+        <p class="private-note">Private vault &middot; sign-in required.</p>
+      </div>
+
+      <!-- A little graph view: linked notes around a central idea -->
+      <div class="visual" aria-hidden="true">
+        <svg viewBox="0 0 320 220" fill="none">
+          <rect width="320" height="220" rx="10" fill="#fcfaf7"/>
+          <g stroke="#e0d3c2" stroke-width="1.5">
+            <path d="M160 110 L82 58"/><path d="M160 110 L244 52"/><path d="M160 110 L262 136"/>
+            <path d="M160 110 L196 186"/><path d="M160 110 L72 154"/><path d="M82 58 L40 96"/>
+            <path d="M244 52 L290 84"/><path d="M72 154 L40 96"/><path d="M262 136 L290 84"/>
+            <path d="M196 186 L262 136"/><path d="M82 58 L136 30"/><path d="M244 52 L136 30"/>
+            <path d="M72 154 L116 196"/>
+          </g>
+          <g fill="#d9c9b4">
+            <circle cx="40" cy="96" r="5"/><circle cx="290" cy="84" r="5"/><circle cx="136" cy="30" r="5"/>
+            <circle cx="116" cy="196" r="4"/>
+          </g>
+          <g fill="#b9a2c4">
+            <circle cx="82" cy="58" r="8"/><circle cx="244" cy="52" r="8"/><circle cx="262" cy="136" r="7"/>
+            <circle cx="196" cy="186" r="7"/><circle cx="72" cy="154" r="7"/>
+          </g>
+          <circle cx="160" cy="110" r="22" fill="#7a4f8c" fill-opacity="0.12"/>
+          <circle cx="160" cy="110" r="13" fill="#7a4f8c"/>
+          <!-- Obsidian-style gem in the centre -->
+          <path d="M160 102 L166 109 L162 118 L156 116 L154 108 Z" fill="#fff" fill-opacity="0.9"/>
+        </svg>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature">
+        <div class="icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 11.5a3.5 3.5 0 0 0 5 0l2.5-2.5a3.5 3.5 0 0 0-5-5l-1 1"/><path d="M11.5 8.5a3.5 3.5 0 0 0-5 0L4 11a3.5 3.5 0 0 0 5 5l1-1"/></svg>
+        </div>
+        <h2>Linked thinking</h2>
+        <p>Notes connect with simple <code>[[links]]</code>, and the graph shows how ideas relate.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="15" height="10" rx="1.5"/><path d="M7 17h6M10 14v3"/></svg>
+        </div>
+        <h2>Any device</h2>
+        <p>The full Obsidian app streams to the browser — plugins, themes and all.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h7l3 3v11H5z"/><path d="M12 3v3h3M8 10h4M8 13h4"/></svg>
+        </div>
+        <h2>Plain Markdown</h2>
+        <p>Every note is a simple text file on our server — easy to back up, never locked in.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">The Flying Cocker &middot; ob.theflyingcocker.co.uk</footer>
+</body>
+</html>

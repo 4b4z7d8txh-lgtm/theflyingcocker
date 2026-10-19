@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Flying Cocker &middot; Workflows</title>
+  <meta name="description" content="The Flying Cocker workflow studio — automations built with n8n." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,500&family=Work+Sans:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="assets/landing.css" />
+  <style>
+    /* Workflows keeps the main site's terracotta accent. */
+    :root { --accent: #c15f3c; --accent-hover: #a84e30; --accent-soft: rgba(193,95,60,0.12); }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="https://www.theflyingcocker.co.uk">
+        <img src="assets/img/portrait.jpg" alt="" />
+        The Flying Cocker
+        <span class="sub">wf</span>
+      </a>
+      <a class="topbar-link" href="https://www.theflyingcocker.co.uk">Main site &rarr;</a>
+    </div>
+  </header>
+
+  <main class="content" role="main">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Workflow studio</p>
+        <h1>Little robots that do the <em>boring bits</em>.</h1>
+        <p class="lead">
+          This is where the Flying Cocker’s automations live. Built with
+          <strong>n8n</strong>, each workflow joins apps and services together —
+          catching an email, tidying some data, sending a nudge — so the
+          repetitive jobs quietly run themselves, day and night.
+        </p>
+        <div class="actions">
+          <!-- APP_URL: where the n8n editor is served. See SUBDOMAINS.md. -->
+          <a class="btn btn-primary" href="/app/">
+            Open the workflow editor
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="https://docs.n8n.io" target="_blank" rel="noopener">n8n docs</a>
+        </div>
+        <p class="private-note">Private workspace &middot; sign-in required.</p>
+      </div>
+
+      <!-- A tiny workflow: trigger → transform → branch → actions -->
+      <div class="visual" aria-hidden="true">
+        <svg viewBox="0 0 320 220" fill="none">
+          <defs>
+            <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
+              <circle cx="1.5" cy="1.5" r="1.2" fill="#ece3d6"/>
+            </pattern>
+          </defs>
+          <rect width="320" height="220" rx="10" fill="url(#dots)"/>
+          <g stroke="#d9c9b4" stroke-width="2">
+            <path d="M76 110 H112"/>
+            <path d="M168 110 C190 110 186 62 212 62"/>
+            <path d="M168 110 C190 110 186 158 212 158"/>
+          </g>
+          <g fill="#c15f3c">
+            <circle cx="112" cy="110" r="3.5"/><circle cx="212" cy="62" r="3.5"/><circle cx="212" cy="158" r="3.5"/>
+          </g>
+          <!-- trigger -->
+          <rect x="20" y="82" width="56" height="56" rx="14" fill="#fff" stroke="#e4d9c9" stroke-width="1.5"/>
+          <path d="M51 96 L41 112 H49 L46 124 L57 107 H49 Z" fill="#c15f3c"/>
+          <!-- transform -->
+          <rect x="112" y="82" width="56" height="56" rx="10" fill="#fff" stroke="#e4d9c9" stroke-width="1.5"/>
+          <g stroke="#6f665a" stroke-width="2" stroke-linecap="round"><path d="M127 101h26M127 110h18M127 119h22"/></g>
+          <!-- action: email -->
+          <rect x="212" y="36" width="88" height="52" rx="10" fill="#fff" stroke="#e4d9c9" stroke-width="1.5"/>
+          <rect x="226" y="51" width="24" height="18" rx="3" stroke="#c15f3c" stroke-width="2"/>
+          <path d="M227 53 L238 61 L249 53" stroke="#c15f3c" stroke-width="2" stroke-linejoin="round"/>
+          <g stroke="#d9c9b4" stroke-width="2" stroke-linecap="round"><path d="M260 56h28M260 64h18"/></g>
+          <!-- action: sheet -->
+          <rect x="212" y="132" width="88" height="52" rx="10" fill="#fff" stroke="#e4d9c9" stroke-width="1.5"/>
+          <rect x="226" y="147" width="24" height="22" rx="3" stroke="#3fa34d" stroke-width="2"/>
+          <path d="M226 155h24M226 162h24M238 147v22" stroke="#3fa34d" stroke-width="1.5"/>
+          <g stroke="#d9c9b4" stroke-width="2" stroke-linecap="round"><path d="M260 152h28M260 160h18"/></g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature">
+        <div class="icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 4 11h5l-1 7 7-9h-5z"/></svg>
+        </div>
+        <h2>Triggers</h2>
+        <p>Workflows kick off on a schedule, a webhook, a new email or a form — whatever the job needs.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="5" r="2.2"/><circle cx="15" cy="5" r="2.2"/><circle cx="10" cy="15" r="2.2"/><path d="M6.4 6.8 8.8 13M13.6 6.8 11.2 13"/></svg>
+        </div>
+        <h2>Connected apps</h2>
+        <p>Hundreds of built-in integrations, plus HTTP and code nodes for anything custom.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="12" height="8" rx="2"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></svg>
+        </div>
+        <h2>Self-hosted</h2>
+        <p>Runs on the Flying Cocker’s own server, so the data and credentials stay in-house.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">The Flying Cocker &middot; wf.theflyingcocker.co.uk</footer>
+</body>
+</html>
