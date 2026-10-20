@@ -24,6 +24,7 @@ lives in Firestore and is released only to a signed-in user.
 | `subdomains/wf/index.html` | Landing page for `wf.theflyingcocker.co.uk` (n8n workflows). |
 | `subdomains/ob/index.html` | Landing page for `ob.theflyingcocker.co.uk` (Obsidian vault in the browser). |
 | `subdomains/shared/landing.css` | Styling shared by the two subdomain landing pages. |
+| `server-setup.sh` | One-line server setup for the `wf.`/`ob.` subdomains and sign-on (see SUBDOMAINS.md). |
 | `SUBDOMAINS.md` | How to run n8n and Obsidian on the VPS and serve the `wf.`/`ob.` subdomains. |
 | `MINECRAFT-SERVER.md` | How to run the Bedrock game server on the VPS (`mc.theflyingcocker.co.uk`). |
 
