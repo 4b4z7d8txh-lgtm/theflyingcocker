@@ -5,19 +5,17 @@
 // lives in a single place. It:
 //   1. Initialises Firebase.
 //   2. Redirects to the login page (index.html) if nobody is signed in.
-//   3. On admin-only pages, sends non-admin members to Minecraps.
-//   4. Reveals the page (#app) once access is confirmed, and shows the
-//      admin-only nav links (marked data-admin-only) to the admin.
+//   3. Refreshes the subdomain sign-on cookie (see session.js).
+//   4. Reveals the page (#app) once a signed-in user is confirmed.
 //   5. Fills in #welcome and wires up the #signout button, if present.
 //
 // Usage in a members page:
 //
 //   <script type="module">
 //     import { guardMembersPage } from './assets/members-guard.js';
-//     guardMembersPage();                    // any signed-in member
-//     guardMembersPage(null, { adminOnly: true });   // admin only
-//     // or, to run code once access is confirmed:
-//     guardMembersPage((user, app, admin) => { ...load private content... });
+//     guardMembersPage();                    // simple gated page, no extra data
+//     // or, to run code once sign-in is confirmed:
+//     guardMembersPage((user, app) => { ...load private content... });
 //   </script>
 //
 // The page's private markup must live inside an element with id="app" that
@@ -26,7 +24,7 @@
 // -------------------------------------------------------------------------
 
 import { firebaseConfig } from './firebase-config.js';
-import { isAdmin, syncServerSession, clearServerSession, MEMBER_HOME } from './session.js';
+import { syncServerSession, clearServerSession } from './session.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import {
   getAuth, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence
@@ -41,15 +39,12 @@ setPersistence(auth, browserSessionPersistence);
 
 /**
  * Gate a members page behind the Firebase login.
- * @param {(user: object, app: object, admin: boolean) => void} [onReady]
- *        Optional callback run once access is confirmed. Receives the
- *        Firebase user, the initialised app (handy for Firestore) and whether
- *        the user is the admin.
- * @param {{ adminOnly?: boolean }} [options]
- *        adminOnly: only the admin may see this page; members go to Minecraps.
+ * @param {(user: object, app: object) => void} [onReady]
+ *        Optional callback run once a signed-in user is confirmed. Receives
+ *        the Firebase user and the initialised app (handy for Firestore).
  */
-export function guardMembersPage(onReady, { adminOnly = false } = {}) {
-  onAuthStateChanged(auth, async (user) => {
+export function guardMembersPage(onReady) {
+  onAuthStateChanged(auth, (user) => {
     // Gate: no signed-in user -> bounce to the login page. `replace` keeps the
     // protected page out of the browser's back-button history.
     if (!user) {
@@ -57,18 +52,8 @@ export function guardMembersPage(onReady, { adminOnly = false } = {}) {
       return;
     }
 
-    const admin = await isAdmin(user);
-    if (adminOnly && !admin) {
-      window.location.replace(MEMBER_HOME);
-      return;
-    }
-
     // Make sure the subdomain sign-on cookie exists (e.g. after it expired).
-    if (admin) syncServerSession(user);
-
-    document.querySelectorAll('[data-admin-only]').forEach((el) => {
-      el.hidden = !admin;
-    });
+    syncServerSession(user);
 
     const welcome = document.getElementById('welcome');
     if (welcome) welcome.textContent = 'Signed in as ' + user.email;
@@ -85,6 +70,6 @@ export function guardMembersPage(onReady, { adminOnly = false } = {}) {
       });
     }
 
-    if (typeof onReady === 'function') onReady(user, app, admin);
+    if (typeof onReady === 'function') onReady(user, app);
   });
 }

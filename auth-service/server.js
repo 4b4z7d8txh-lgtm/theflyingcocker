@@ -4,18 +4,17 @@
 // A tiny server that runs on the VPS next to Nginx (127.0.0.1 only). It turns
 // the Firebase login on www.theflyingcocker.co.uk into one secure cookie that
 // is valid on every *.theflyingcocker.co.uk subdomain, and lets Nginx ask
-// "is this visitor the admin?" before serving wf. / ob.
+// "is this visitor signed in?" before serving wf. / ob.
 //
 //   POST /auth/session   Called by the website right after sign-in, with the
 //                        user's Firebase ID token. Sets the fc_session cookie.
 //   POST /auth/logout    Clears the cookie (called on Sign out).
 //   GET  /auth/verify    Used by Nginx `auth_request` on the subdomains:
-//                          204 = signed in AND admin  -> let them in
-//                          403 = signed in, not admin -> send to Minecraps
-//                          401 = not signed in        -> send to the login page
+//                          204 = signed in     -> let them in
+//                          401 = not signed in -> send to the login page
 //
-// Who counts as admin is a Firebase "custom claim" (admin: true), set with
-// `node set-admin.js you@example.com` — see SUBDOMAINS.md.
+// Every approved member gets the same access as on the main site; who is a
+// member is still managed in Firebase console -> Authentication -> Users.
 // -------------------------------------------------------------------------
 
 'use strict';
@@ -104,7 +103,6 @@ async function handle(req, res) {
     } catch (e) {
       return send(res, 401);
     }
-    if (claims.admin !== true) return send(res, 403);
     return send(res, 204, undefined, { 'X-Auth-Email': claims.email || '' });
   }
 
@@ -122,11 +120,11 @@ async function handle(req, res) {
       return send(res, 400, { error: 'bad request' });
     }
     try {
-      const decoded = await auth.verifyIdToken(idToken, true);
+      await auth.verifyIdToken(idToken, true);
       const value = await auth.createSessionCookie(idToken, {
         expiresIn: SESSION_DAYS * 24 * 60 * 60 * 1000,
       });
-      return send(res, 200, { admin: decoded.admin === true }, {
+      return send(res, 200, { ok: true }, {
         'Content-Type': 'application/json',
         'Set-Cookie': sessionCookie(value),
       });

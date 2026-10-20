@@ -35,7 +35,7 @@ The login page is served at the site **root** (`/`). The old mockup is kept as
   assets/
     firebase-config.js       <- Firebase web config (public by design)
     members-guard.js         <- shared login gate imported by every members page
-    session.js               <- admin check + single sign-on for the subdomains
+    session.js               <- single sign-on for the subdomains
     members.css              <- shared members-area styling (topbar, nav, footer)
     img/portrait.jpg         <- the login portrait
   index.html.mockup.bak      <- backup of the original mockup (not served as a page)
@@ -102,7 +102,7 @@ echo "Done. Current files:"; ls -laR /var/www/html
 
 ## Authentication (Firebase) — reference
 
-> Admin vs member roles and the single sign-on for `wf.`/`ob.` are covered in
+> The single sign-on for `wf.`/`ob.` is covered in
 > **[SUBDOMAINS.md](SUBDOMAINS.md)**.
 
 - **Firebase project id:** `theflyingcocker`

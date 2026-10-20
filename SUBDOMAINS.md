@@ -10,27 +10,30 @@ Two extra sites on the same Fasthosts VPS as the main website:
 > Plain-language summary: each subdomain gets a small welcome page (from this
 > repo) at its front door. Behind the **Open** button, at `/app/`, Nginx hands the
 > visitor over to the real program running in a Docker container on the server.
-> **Both subdomains are admin-only**, and the admin gets in with the normal
+> **Both subdomains are for members only**, and members get in with the normal
 > Flying Cocker sign-in — no second password.
 
 ## Who can see what
 
-| | Admin (you) | Other members | Not signed in |
-|---|---|---|---|
-| `www` login page | ✓ | ✓ | ✓ |
-| Members home (`members.html`) | ✓ | → sent to Minecraps | → login |
-| Minecraps (`minecraps.html`) | ✓ | ✓ | → login |
-| `wf.` and `ob.` (everything on them) | ✓ | → sent to Minecraps | → login, then back |
+Everyone with a website account can use everything; nobody else can use any of it.
+
+| | Members (anyone with an account) | Not signed in |
+|---|---|---|
+| `www` login page | ✓ | ✓ |
+| Members home and Minecraps | ✓ | → login |
+| `wf.` and `ob.` (everything on them) | ✓ | → login, then back |
+
+Members are still managed in one place: Firebase console → Authentication → Users.
 
 ## How the single sign-on works
 
 1. You sign in on `www.theflyingcocker.co.uk` as usual (Firebase).
-2. Because your account carries the **admin** flag, the page hands your login to a
-   tiny helper program on the VPS (`auth-service/`). It checks it with Firebase
-   and sets one secure cookie, `fc_session`, for **all** `*.theflyingcocker.co.uk`.
+2. The page hands the login to a tiny helper program on the VPS
+   (`auth-service/`). It checks it with Firebase and sets one secure cookie,
+   `fc_session`, for **all** `*.theflyingcocker.co.uk`.
 3. Whenever anyone opens `wf.` or `ob.`, Nginx first asks the helper about that
-   cookie (`auth_request`). Admin → in. Signed-in member → sent to Minecraps.
-   No cookie → sent to the login page, then straight back to where they were going.
+   cookie (`auth_request`). Signed in → in. No cookie → sent to the login page,
+   then straight back to where they were going.
 
 Like the website login, it ends when the browser is closed (and after 5 days at
 most). **Sign out** on the members pages clears it everywhere.
@@ -44,10 +47,9 @@ subdomains/
   shared/landing.css   <- styling shared by both (same look as the main site)
 auth-service/
   server.js            <- the single sign-on helper (Node, 127.0.0.1:8787)
-  set-admin.js         <- marks a Firebase account as admin
   package.json
   fc-auth.service      <- systemd unit to keep it running
-assets/session.js      <- browser side: admin check + hands the login to the helper
+assets/session.js      <- browser side: hands the login to the helper
 ```
 
 On the server each subdomain has its own web root:
@@ -93,7 +95,7 @@ useradd --system --no-create-home --shell /usr/sbin/nologin fcauth
 BRANCH="claude/wf-ob-landing-pages-2zcq7f"
 BASE="https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/$BRANCH"
 mkdir -p /opt/fc-auth && cd /opt/fc-auth
-for f in server.js set-admin.js package.json fc-auth.service; do
+for f in server.js package.json fc-auth.service; do
   curl -fsSL "$BASE/auth-service/$f" -o "$f"
 done
 npm install --omit=dev
@@ -111,19 +113,6 @@ systemctl daemon-reload && systemctl enable --now fc-auth
 systemctl status fc-auth --no-pager      # should say "active (running)"
 ```
 
-**c. Make yourself the admin** (use the email you log in with):
-
-```bash
-cd /opt/fc-auth
-GOOGLE_APPLICATION_CREDENTIALS=/opt/fc-auth/service-account.json node set-admin.js you@example.com
-```
-
-Then **sign out and back in** on the website so the admin flag takes effect.
-(To remove it from someone: add `--remove` to the end.)
-
-**d. Publish the updated Firestore rules** — the members home content is now
-admin-only. Paste `firestore.rules` into Firebase console → Firestore Database →
-Rules → **Publish**.
 
 ## 3. Nginx snippets (shared)
 
@@ -137,11 +126,10 @@ location /auth/ {
 }
 EOF
 
-# The admin-only gate, included in each subdomain
+# The members-only gate, included in each subdomain
 cat > /etc/nginx/snippets/fc-admin-gate.conf <<'EOF'
 auth_request /_auth;
 error_page 401 = @fc_login;
-error_page 403 = @fc_denied;
 
 location = /_auth {
     internal;
@@ -152,7 +140,6 @@ location = /_auth {
     proxy_set_header Cookie $http_cookie;
 }
 location @fc_login  { return 302 https://www.theflyingcocker.co.uk/?next=https://$host$uri; }
-location @fc_denied { return 302 https://www.theflyingcocker.co.uk/minecraps.html; }
 EOF
 ```
 
@@ -204,14 +191,17 @@ docker compose up -d
 > **One exception to "no second password":** n8n (the free edition) can't
 > switch its own login off. The first time you open `wf.…/app/` it asks you to
 > create the owner account; after that, the setting above keeps you signed in
-> to n8n for a year on that browser. Nobody but you can even reach that screen,
-> because the admin gate sits in front of it.
+> to n8n for a year on that browser. Only signed-in members can even reach that
+> screen. Other members either use the same n8n login or get their own: invite
+> them from n8n → Settings → Users.
 
 ## 6. Obsidian in the browser (for `ob.`)
 
 Uses the [linuxserver.io Obsidian image](https://docs.linuxserver.io/images/docker-obsidian/),
 which runs the real Obsidian app and streams it to the browser. It has **no
-password of its own** here — the admin gate is the lock.
+password of its own** here — the members gate is the lock. It is **one shared
+Obsidian screen and one shared vault**: if two people open it at the same time
+they see and control the same window.
 
 ```bash
 mkdir -p /opt/obsidian && cd /opt/obsidian
@@ -254,7 +244,7 @@ server {
     root /var/www/wf;
     index index.html;
 
-    include snippets/fc-admin-gate.conf;      # admin only
+    include snippets/fc-admin-gate.conf;      # members only
 
     # Webhooks must stay reachable by outside services (give each webhook
     # its own auth inside n8n if it needs one).
@@ -292,7 +282,7 @@ server {
     root /var/www/ob;
     index index.html;
 
-    include snippets/fc-admin-gate.conf;      # admin only
+    include snippets/fc-admin-gate.conf;      # members only
 
     location = /app { return 301 /app/; }
     location /app/ {
@@ -327,7 +317,7 @@ Same `curl` approach as the main site ([VPS-SETUP.md](VPS-SETUP.md)).
 BRANCH="claude/wf-ob-landing-pages-2zcq7f"
 BASE="https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/$BRANCH"
 
-# Main site: the login + members pages changed for admin/member roles
+# Main site: the login + members pages now set the sign-on cookie
 cd /var/www/html
 for f in index.html members.html minecraps.html assets/members-guard.js assets/session.js; do
   curl -fsSL "$BASE/$f" -o "$f" && echo "updated $f" || echo "FAILED $f"
@@ -352,9 +342,8 @@ find /var/www/html /var/www/wf /var/www/ob -type f -exec chmod 644 {} \;
 1. Open `https://wf.theflyingcocker.co.uk` → you land on the **login page**.
 2. Sign in as yourself → you're sent straight back to the `wf.` landing page.
 3. Open `https://ob.theflyingcocker.co.uk` → it opens with **no** login prompt.
-4. The members pages now show **Home · Minecraps · Workflows · Vault** for you.
-5. In another private window, sign in as a normal member → you land on
-   **Minecraps**, see only that tab, and `wf.`/`ob.` bounce you back to Minecraps.
+4. The members pages now show **Home · Minecraps · Workflows · Vault**.
+5. Sign out, then open `wf.` again → you're sent to the login page.
 
 ---
 
@@ -368,16 +357,12 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8787/auth/verify   # e
 
 - **Loops back to the login page after signing in:** the `/auth/` line is missing
   from the www HTTPS block (step 3), or the helper isn't running.
-- **You're sent to Minecraps instead of in:** the admin flag isn't on your
-  account (step 2c), or you haven't signed out and back in since setting it.
-- **Members home says "Could not load members content":** publish the new
-  Firestore rules (step 2d) and make sure you're the admin.
 
 ## Security notes
 
 - The helper and both apps listen on `127.0.0.1` only; the sole way in is
   through Nginx over HTTPS. Don't open ports 8787, 5678 or 3000 in `ufw`.
-- The sign-on cookie is `HttpOnly`, `Secure` and only issued to admin accounts.
+- The sign-on cookie is `HttpOnly`, `Secure` and only issued to approved members.
   Sign-in/out calls are only accepted from `https://www.theflyingcocker.co.uk`.
 - To lock someone out immediately, disable them in Firebase console →
   Authentication → Users (the helper honours revoked/disabled accounts within a

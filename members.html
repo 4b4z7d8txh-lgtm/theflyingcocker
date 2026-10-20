@@ -19,10 +19,10 @@
           The Flying Cocker
         </span>
         <nav class="nav">
-          <a data-admin-only hidden href="members.html" class="active">Home</a>
+          <a href="members.html" class="active">Home</a>
           <a href="minecraps.html">Minecraps</a>
-          <a href="https://wf.theflyingcocker.co.uk" data-admin-only hidden>Workflows</a>
-          <a href="https://ob.theflyingcocker.co.uk" data-admin-only hidden>Vault</a>
+          <a href="https://wf.theflyingcocker.co.uk">Workflows</a>
+          <a href="https://ob.theflyingcocker.co.uk">Vault</a>
         </nav>
         <div class="topbar-right">
           <span id="welcome" class="welcome"></span>
@@ -49,11 +49,11 @@
     const heading = document.getElementById('heading');
     const bodyEl = document.getElementById('body');
 
-    // The shared guard checks the login (admin only — other members are sent
-    // to Minecraps), reveals the page and wires sign-out. Once access is
-    // confirmed, load the PRIVATE content from Firestore. The security rules
-    // only allow this read for the admin, so the content is never exposed to
-    // the public — even though this HTML file is.
+    // The shared guard checks the login, reveals the page and wires sign-out.
+    // Once a signed-in user is confirmed, load the PRIVATE content from
+    // Firestore. The security rules only allow this read for a signed-in user,
+    // so the content is never exposed to the public — even though this HTML
+    // file is.
     guardMembersPage(async (user, app) => {
       const db = getFirestore(app);
       try {
@@ -72,7 +72,7 @@
         bodyEl.textContent = 'Could not load members content. Check your Firestore '
           + 'rules and that the members/home document exists (see SETUP.md).';
       }
-    }, { adminOnly: true });
+    });
   </script>
 </body>
 </html>

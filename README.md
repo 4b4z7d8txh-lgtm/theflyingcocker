@@ -13,7 +13,7 @@ lives in Firestore and is released only to a signed-in user.
 | `members.html` | The members home — verifies the login and loads private content from Firestore. |
 | `minecraps.html` | Protected sub-page: the family Minecraft (Bedrock) server info and how to join. |
 | `assets/members-guard.js` | Shared login gate imported by every members page (redirect to login, reveal page, sign out). |
-| `assets/session.js` | Admin check + hands the admin's login to the sign-on helper so `wf.`/`ob.` need no second login. |
+| `assets/session.js` | Hands the login to the sign-on helper so `wf.`/`ob.` need no second login. |
 | `auth-service/` | Small single sign-on helper that runs on the VPS (see SUBDOMAINS.md). |
 | `assets/members.css` | Shared members-area styling (top bar, nav, footer) so pages stay consistent. |
 | `assets/firebase-config.js` | Your Firebase project config (you paste this in — see SETUP.md). |
@@ -37,12 +37,8 @@ pages. Every page is protected by the same server-enforced Firebase check.
 
 ## Who can see what
 
-- **Admin** (accounts flagged with `auth-service/set-admin.js`): every members
-  page plus the `wf.` and `ob.` subdomains, all from the one sign-in.
-- **Other members:** Minecraps only, for now.
-
-To make an existing page admin-only, call `guardMembersPage(fn, { adminOnly: true })`;
-nav links marked `data-admin-only` are shown to the admin only.
+Everyone with an account sees everything: the members pages and the `wf.` and
+`ob.` subdomains, all from the one sign-in (see SUBDOMAINS.md).
 
 ## How it works
 
