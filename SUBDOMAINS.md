@@ -66,7 +66,9 @@ change the `href="/app/"` line (marked `APP_URL`) in that page's `index.html`.
 
 > **Shortcut:** `server-setup.sh` does steps 2–8 below in one go, so it can be
 > started with a single line (useful from a phone SSH app that can't paste
-> multi-line blocks):
+> multi-line blocks). If n8n is already running in Docker (container
+> `n8n-n8n-1`), the script reuses it and its workflows instead of installing a
+> second one:
 >
 > ```bash
 > curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/wf-ob-landing-pages-2zcq7f/server-setup.sh -o /root/fc-setup.sh && bash /root/fc-setup.sh

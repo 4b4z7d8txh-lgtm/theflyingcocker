@@ -96,21 +96,38 @@ location = /_auth {
 }
 location @fc_login { return 302 https://www.theflyingcocker.co.uk/?next=https://$host$uri; }
 EOF
-WWW=$(grep -rl "server_name.*www.theflyingcocker" /etc/nginx/sites-enabled/ | head -1 || true)
+# -R (not -r) so the search follows the symlinks in sites-enabled.
+WWW=$(grep -Rl "server_name.*theflyingcocker" /etc/nginx/sites-enabled/ /etc/nginx/conf.d/ 2>/dev/null | head -1 || true)
 [ -n "$WWW" ] || fail "could not find the main site's Nginx config"
 WWW=$(readlink -f "$WWW")
 echo "main site config: $WWW"
 cp "$WWW" /root/nginx-www-backup.conf
 python3 - "$WWW" <<'EOF' || fail "could not add the /auth/ line - send: cat $WWW"
-import sys
-p = sys.argv[1]; s = open(p).read()
-if 'fc-auth-endpoints' in s:
+# Add the include inside the HTTPS server block for theflyingcocker.co.uk,
+# ignoring commented-out lines (the stock "default" file has several).
+import re, sys
+p = sys.argv[1]; lines = open(p).read().split('\n')
+if any('fc-auth-endpoints' in l and not l.strip().startswith('#') for l in lines):
     print('already connected'); sys.exit()
-i = s.find('listen 443')
-if i < 0:
-    sys.exit('no "listen 443" in ' + p)
-j = s.index('\n', i) + 1
-open(p, 'w').write(s[:j] + '    include snippets/fc-auth-endpoints.conf;\n' + s[j:])
+depth, block, target = 0, None, None
+for n, l in enumerate(lines):
+    code = l.split('#', 1)[0]
+    if depth == 0 and re.match(r'\s*server\s*\{', code):
+        block = {'listen': None, 'ours': False}
+    if block is not None:
+        if block['listen'] is None and re.match(r'\s*listen\s+(\[::\]:)?443\b', code):
+            block['listen'] = n
+        if re.search(r'server_name\s[^;]*theflyingcocker', code):
+            block['ours'] = True
+    depth += code.count('{') - code.count('}')
+    if depth == 0 and block is not None:
+        if block['ours'] and block['listen'] is not None:
+            target = block['listen']; break
+        block = None
+if target is None:
+    sys.exit('no HTTPS server block for theflyingcocker.co.uk in ' + p)
+lines.insert(target + 1, '    include snippets/fc-auth-endpoints.conf;')
+open(p, 'w').write('\n'.join(lines))
 print('connected')
 EOF
 if ! nginx -t; then
@@ -120,8 +137,34 @@ fi
 systemctl reload nginx
 
 step "6/9 n8n and Obsidian (first download takes a few minutes)"
-mkdir -p /opt/n8n /opt/obsidian
-cat > /opt/n8n/compose.yaml <<'EOF'
+# --- n8n: reuse the one already on the server if there is one -------------
+N8N_DIR=$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' n8n-n8n-1 2>/dev/null || true)
+if [ -n "$N8N_DIR" ]; then
+  echo "using the existing n8n in $N8N_DIR (workflows kept)"
+  cd "$N8N_DIR"
+  if [ -e docker-compose.yml ] || [ -e docker-compose.yaml ]; then OVR=docker-compose.override.yml; else OVR=compose.override.yaml; fi
+  if [ -e "$OVR" ] && ! grep -q "theflyingcocker setup" "$OVR"; then
+    fail "$N8N_DIR/$OVR already exists - not touching it"
+  fi
+  # Serve n8n under wf.../app/ behind Nginx; Caddy isn't needed (Nginx
+  # already owns ports 80/443), so keep it switched off.
+  cat > "$OVR" <<'EOF'
+# Added by theflyingcocker setup: n8n behind Nginx at https://wf.theflyingcocker.co.uk/app/
+services:
+  n8n:
+    environment:
+      - N8N_PATH=/app/
+      - WEBHOOK_URL=https://wf.theflyingcocker.co.uk/app/
+      - N8N_PROXY_HOPS=1
+      - N8N_USER_MANAGEMENT_JWT_DURATION_HOURS=8760
+  caddy:
+    profiles: ["disabled"]
+EOF
+  docker compose config -q || fail "the n8n settings didn't validate"
+  docker compose up -d n8n || fail "n8n did not restart"
+else
+  mkdir -p /opt/n8n
+  cat > /opt/n8n/compose.yaml <<'EOF'
 services:
   n8n:
     image: docker.n8n.io/n8nio/n8n:latest
@@ -142,6 +185,14 @@ services:
 volumes:
   n8n_data:
 EOF
+  (cd /opt/n8n && docker compose up -d --quiet-pull) || fail "n8n did not start"
+fi
+
+# --- Obsidian in the browser ----------------------------------------------
+mkdir -p /opt/obsidian
+if [ ! -e /opt/obsidian/compose.yaml ] && ss -tln | grep -q '127.0.0.1:3000 \|:3000 '; then
+  fail "port 3000 is already used by another program"
+fi
 cat > /opt/obsidian/compose.yaml <<'EOF'
 services:
   obsidian:
@@ -160,7 +211,21 @@ services:
     security_opt:
       - seccomp:unconfined
 EOF
-(cd /opt/n8n && docker compose up -d --quiet-pull) || fail "n8n did not start"
+# If the Obsidian LiveSync CouchDB is running, put the browser Obsidian on its
+# network so LiveSync can reach it at http://couchdb-for-obsidian:5984
+COUCH_NET=$(docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{$k}} {{end}}' couchdb-for-obsidian 2>/dev/null | awk '{print $1}' || true)
+if [ -n "$COUCH_NET" ]; then
+  cat >> /opt/obsidian/compose.yaml <<EOF
+    networks:
+      - default
+      - couchdb
+networks:
+  couchdb:
+    name: $COUCH_NET
+    external: true
+EOF
+  echo "Obsidian will be able to reach CouchDB at http://couchdb-for-obsidian:5984"
+fi
 (cd /opt/obsidian && docker compose up -d --quiet-pull) || fail "Obsidian did not start"
 
 step "7/9 Nginx: wf. and ob. sites"
@@ -248,7 +313,8 @@ for sub in wf ob; do
   fetch "assets/img/portrait.jpg"       /var/www/$sub/assets/img/portrait.jpg
   echo "deployed $sub"
 done
-chown -R deployuser:www-data /var/www/html /var/www/wf /var/www/ob
+OWNER=deployuser; id deployuser >/dev/null 2>&1 || OWNER=root
+chown -R "$OWNER":www-data /var/www/html /var/www/wf /var/www/ob
 find /var/www/html /var/www/wf /var/www/ob -type d -exec chmod 755 {} \;
 find /var/www/html /var/www/wf /var/www/ob -type f -exec chmod 644 {} \;
 
