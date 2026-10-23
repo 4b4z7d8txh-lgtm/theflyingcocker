@@ -47,7 +47,13 @@ EOF
 
 step "3/9 Packages (Node.js, Docker)"
 apt-get update -q
-apt-get install -y -q nodejs npm curl python3
+apt-get install -y -q curl python3
+# Node.js may already be installed (e.g. from NodeSource, whose nodejs
+# includes npm and conflicts with Ubuntu's npm package), so only add what's missing.
+command -v node >/dev/null 2>&1 || apt-get install -y -q nodejs
+command -v npm  >/dev/null 2>&1 || apt-get install -y -q npm
+NODE=$(command -v node)
+echo "using $NODE $(node --version), npm $(npm --version)"
 if ! command -v docker >/dev/null 2>&1; then
   apt-get install -y -q docker.io docker-compose-v2
 fi
@@ -61,7 +67,7 @@ for f in server.js package.json fc-auth.service; do fetch "auth-service/$f" "$f"
 npm install --omit=dev --no-audit --no-fund --loglevel=error
 chown -R root:fcauth /opt/fc-auth
 chmod 640 "$KEY"
-cp /opt/fc-auth/fc-auth.service /etc/systemd/system/
+sed "s#^ExecStart=.*#ExecStart=$NODE server.js#" /opt/fc-auth/fc-auth.service > /etc/systemd/system/fc-auth.service
 systemctl daemon-reload
 systemctl enable fc-auth >/dev/null 2>&1
 systemctl restart fc-auth
