@@ -22,7 +22,12 @@ step() { echo; echo "=== $* ==="; }
 fail() { echo; echo "STOPPED: $*"; echo "Send this output to Claude."; exit 1; }
 fetch() { curl -fsSL --retry 3 "$BASE/$1" -o "$2" || fail "could not download $1"; }
 
+# Any unexpected failure also ends with a clear STOPPED message.
+trap 'fail "the command on line $LINENO of the script failed (see the lines above)"' ERR
+
 [ "$(id -u)" -eq 0 ] || fail "run this as root"
+
+echo "fc-setup version: 2026-10-23 (node fix)"
 
 step "1/9 Room check"
 free -h | sed -n '1,2p'
