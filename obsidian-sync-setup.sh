@@ -9,7 +9,8 @@
 #   curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/wf-ob-landing-pages-2zcq7f/obsidian-sync-setup.sh -o /root/ob-sync-setup.sh && bash /root/ob-sync-setup.sh
 #
 # 1. Applies the CouchDB settings LiveSync needs, and creates a dedicated
-#    sync user + database (the CouchDB admin account is never used by apps).
+#    sync account (a CouchDB admin, as LiveSync needs to rebuild the database)
+#    + database. The original CouchDB admin account is never used by apps.
 # 2. Publishes CouchDB at https://ob.theflyingcocker.co.uk/couchdb/
 #    (CouchDB's own username/password; the app can't use the website login).
 # 3. Nightly backup at 03:15: CouchDB + plain-Markdown vault, kept 30 days in
@@ -34,7 +35,7 @@ step() { echo; echo "=== $* ==="; }
 fail() { echo; echo "STOPPED: $*"; echo "Send this output to Claude."; exit 1; }
 trap 'fail "the command on line $LINENO of the script failed (see the lines above)"' ERR
 
-echo "ob-sync-setup version: 2026-10-23"
+echo "ob-sync-setup version: 2026-11-03 (sync admin fix)"
 [ "$(id -u)" -eq 0 ] || fail "run this as root"
 
 step "1/5 Checks"
@@ -93,15 +94,20 @@ for (section, key), value in settings.items():
 for db in ("_users", "_replicator", os.environ["DB"]):
     call("PUT", "/" + db, ok=(201, 202, 412))   # 412 = already exists
 
-# Dedicated sync user (created, or its password refreshed).
+# Dedicated sync account. LiveSync deletes and recreates the database when
+# a device initialises or rebuilds the server, which CouchDB only allows a
+# server admin to do, so the sync account is a CouchDB admin. (Its password is
+# long and random, and the notes themselves are end-to-end encrypted.)
+call("PUT", "/_node/_local/_config/admins/" + os.environ["SYNC_USER"], os.environ["SYNC_PASS"])
+
+# Remove the plain user account an earlier version created, so there is only
+# one "obsidian" login.
 uid = "org.couchdb.user:" + os.environ["SYNC_USER"]
-doc = {"name": os.environ["SYNC_USER"], "password": os.environ["SYNC_PASS"], "roles": [], "type": "user"}
 try:
     _, existing = call("GET", "/_users/" + uid)
-    doc["_rev"] = existing["_rev"]
+    call("DELETE", f"/_users/{uid}?rev={existing['_rev']}")
 except SystemExit:
     pass
-call("PUT", "/_users/" + uid, doc)
 
 # Only the sync user (and admins) may use the vault database.
 call("PUT", f"/{os.environ['DB']}/_security",

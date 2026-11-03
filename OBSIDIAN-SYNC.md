@@ -34,8 +34,9 @@ curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/cla
 It (`obsidian-sync-setup.sh`):
 
 1. applies the CouchDB settings LiveSync needs and creates a dedicated sync
-   user `obsidian` with a random password, and a database `obsidian-vault`
-   that only that user can use;
+   account `obsidian` with a random password, and a database `obsidian-vault`.
+   The account is a CouchDB admin, because LiveSync deletes and recreates the
+   database when a device initialises or rebuilds the server;
 2. publishes CouchDB at `https://ob.theflyingcocker.co.uk/couchdb/` — protected
    by that username/password (the app can't use the website sign-in);
 3. schedules the nightly backup;
