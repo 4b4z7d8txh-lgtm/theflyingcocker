@@ -9,10 +9,10 @@ lives in Firestore and is released only to a signed-in user.
 
 | File | Purpose |
 |------|---------|
-| `index.html` | The login landing page (the "Flying Cocker" design), wired to Firebase sign-in. |
+| `index.html` | The plain login page (username + password only), wired to Firebase sign-in. |
 | `members.html` | The members area — verifies the login and loads private content from Firestore. |
 | `assets/firebase-config.js` | Your Firebase project config (you paste this in — see SETUP.md). |
-| `assets/img/portrait.jpg` | The portrait shown on the login card. |
+| `assets/img/portrait.jpg` | Portrait image (no longer shown on the login page). |
 | `firestore.rules` | Security rules that protect the members content on the server. |
 | `SETUP.md` | **Start here** — step-by-step Firebase setup (about 15 min, no coding). |
 
