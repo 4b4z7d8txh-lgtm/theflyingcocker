@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Flying Cocker</title>
+  <title>Sign in</title>
   <style>
     body {
       margin: 0;
@@ -43,6 +43,7 @@
 
   <script type="module">
     import { firebaseConfig } from './assets/firebase-config.js';
+    import { syncServerSession, nextUrl, HOME } from './assets/session.js';
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
     import {
       getAuth, signInWithEmailAndPassword, onAuthStateChanged, setPersistence,
@@ -57,9 +58,13 @@
     const error = document.getElementById('error');
     const button = form.querySelector('button');
 
-    // If already signed in, skip straight to the members area.
-    onAuthStateChanged(auth, (user) => {
-      if (user) window.location.replace('members.html');
+    // Once signed in (just now, or already): set the subdomain sign-on
+    // cookie, then go back to the subdomain they came from (?next=) or to the
+    // members home.
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+      await syncServerSession(user);
+      window.location.replace(nextUrl() || HOME);
     });
 
     form.addEventListener('submit', async (e) => {
@@ -71,8 +76,8 @@
       button.disabled = true;
       button.textContent = 'Signing in…';
       try {
+        // On success, onAuthStateChanged above does the redirect.
         await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = 'members.html';
       } catch (err) {
         // Show one generic message so we don't reveal which field was wrong.
         error.textContent = 'Incorrect username or password.';

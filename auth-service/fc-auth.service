@@ -1,0 +1,22 @@
+# systemd unit for the single sign-on helper. Install with:
+#   cp /opt/fc-auth/fc-auth.service /etc/systemd/system/
+#   systemctl daemon-reload && systemctl enable --now fc-auth
+[Unit]
+Description=The Flying Cocker single sign-on helper
+After=network.target
+
+[Service]
+User=fcauth
+WorkingDirectory=/opt/fc-auth
+Environment=GOOGLE_APPLICATION_CREDENTIALS=/opt/fc-auth/service-account.json
+Environment=PORT=8787
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

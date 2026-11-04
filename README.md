@@ -10,11 +10,38 @@ lives in Firestore and is released only to a signed-in user.
 | File | Purpose |
 |------|---------|
 | `index.html` | The plain login page (username + password only), wired to Firebase sign-in. |
-| `members.html` | The members area — verifies the login and loads private content from Firestore. |
+| `members.html` | The members home — verifies the login and loads private content from Firestore. |
+| `minecraps.html` | Protected sub-page: the family Minecraft (Bedrock) server info and how to join. |
+| `assets/members-guard.js` | Shared login gate imported by every members page (redirect to login, reveal page, sign out). |
+| `assets/session.js` | Hands the login to the sign-on helper so `wf.`/`ob.` need no second login. |
+| `auth-service/` | Small single sign-on helper that runs on the VPS (see SUBDOMAINS.md). |
+| `assets/members.css` | Shared members-area styling (top bar, nav, footer) so pages stay consistent. |
 | `assets/firebase-config.js` | Your Firebase project config (you paste this in — see SETUP.md). |
-| `assets/img/portrait.jpg` | Portrait image (no longer shown on the login page). |
+| `assets/img/portrait.jpg` | Portrait image (no longer shown on any page). |
 | `firestore.rules` | Security rules that protect the members content on the server. |
-| `SETUP.md` | **Start here** — step-by-step Firebase setup (about 15 min, no coding). |
+| `SETUP.md` | Firebase setup (about 15 min, no coding). |
+| `VPS-SETUP.md` | How the live site is hosted on the VPS, and how to deploy changes. |
+| `subdomains/wf/index.html` | Landing page for `wf.theflyingcocker.co.uk` (n8n workflows). |
+| `subdomains/ob/index.html` | Landing page for `ob.theflyingcocker.co.uk` (Obsidian vault in the browser). |
+| `subdomains/shared/landing.css` | Styling shared by the two subdomain landing pages. |
+| `server-setup.sh` | One-line server setup for the `wf.`/`ob.` subdomains and sign-on (see SUBDOMAINS.md). |
+| `obsidian-sync-setup.sh` | Server setup for Obsidian sync (LiveSync via CouchDB) and nightly backups. |
+| `OBSIDIAN-SYNC.md` | How the phone + browser Obsidian sync and the backups work, step by step. |
+| `SUBDOMAINS.md` | How to run n8n and Obsidian on the VPS and serve the `wf.`/`ob.` subdomains. |
+| `MINECRAFT-SERVER.md` | How to run the Bedrock game server on the VPS (`mc.theflyingcocker.co.uk`). |
+
+## Adding another members sub-page
+
+The members area uses one shared login gate, so new protected pages are quick:
+copy `minecraps.html`, link `assets/members.css`, and call `guardMembersPage()`
+from `assets/members-guard.js` (optionally with a callback to load data once
+sign-in is confirmed). Then add a link to it in the `<nav>` of the other members
+pages. Every page is protected by the same server-enforced Firebase check.
+
+## Who can see what
+
+Everyone with an account sees everything: the members pages and the `wf.` and
+`ob.` subdomains, all from the one sign-in (see SUBDOMAINS.md).
 
 ## How it works
 
