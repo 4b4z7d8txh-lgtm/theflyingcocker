@@ -119,6 +119,14 @@ server matches `main` again.
 
 ## Open items
 
+0. **Finish the switch to `main` (from the 2026-11-05 chat):**
+   - On GitHub, make `main` the default branch (Settings → General → Default
+     branch). Until then, new chats may start from an old branch.
+   - Deploy `main` to `/var/www/html` once (command under "Deploying changes").
+     Until then, the live `index.html` and `members.html` are the rebuilt
+     versions from `claude/landing-page-login-rghgnd` (they work, but differ from
+     `main`). After deploying, check: log in at `www.`, see the top menu (Home,
+     Minecraps, Workflows, Vault), and confirm Vault and Workflows open.
 1. **Vault shows Obsidian's Quick Start, not the phone's notes.** Do
    OBSIDIAN-SYNC.md §3 (work laptop): create an empty vault in the browser
    Obsidian, install Self-hosted LiveSync, use the phone's setup URI and
