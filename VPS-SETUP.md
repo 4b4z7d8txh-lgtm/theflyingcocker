@@ -1,11 +1,12 @@
 # VPS runbook — The Flying Cocker
 
-How the live site is hosted and how to deploy changes. This is the site at
-**https://www.theflyingcocker.co.uk**.
+How the live site is hosted, how its parts fit together, and how to deploy
+changes. Everything below was confirmed on the server on 2026-11-05 unless
+marked *(unconfirmed)*.
 
-> Plain-language summary: the website files live in a folder on a Linux server
-> (a Fasthosts VPS). To update the site, you copy the latest files from GitHub
-> into that folder. Nginx (the web server) then serves them to visitors.
+> Plain-language summary: the website lives on a Linux server (a Fasthosts VPS).
+> Nginx serves three addresses: the main site (`www.`), the notes vault (`ob.`)
+> and workflows (`wf.`). One login on `www.` gets you into all three.
 
 ---
 
@@ -13,118 +14,119 @@ How the live site is hosted and how to deploy changes. This is the site at
 
 | Thing | Value |
 |-------|-------|
-| Host | Fasthosts VPS |
-| OS | Ubuntu 24.04 LTS |
-| Web server | Nginx |
-| HTTPS | Enabled via Certbot / Let's Encrypt (auto-renews) |
-| Domain | `theflyingcocker.co.uk` and `www.theflyingcocker.co.uk` |
-| Web root (docroot) | `/var/www/html` |
+| Host | Fasthosts VPS, Ubuntu 24.04 LTS |
+| Web server | Nginx 1.24 |
+| HTTPS | Certbot / Let's Encrypt (auto-renews) |
+| Log in | SSH as `root` |
 | Files owned by | user `deployuser`, group `www-data` |
-| You log in via | SSH as `root` (`ssh root@YOUR_SERVER_IP`) |
+| Owner's terminal | **Phone.** Pasted text loses its line breaks, so every command given to the owner must be a **single line** (join steps with `;` or `&&`). |
 
-The login page is served at the site **root** (`/`). The old mockup is kept as
-`/var/www/html/index.html.mockup.bak`. The path `/login` is not used.
+## Subdomains
 
-## What's in the web root
+| Address | Nginx file | Static pages | `/app/` goes to | Other |
+|---|---|---|---|---|
+| `theflyingcocker.co.uk`, `www.` | `/etc/nginx/sites-enabled/default` | `/var/www/html` | — | `/auth/` → fc-auth (port 8787), via `snippets/fc-auth-endpoints.conf` |
+| `ob.theflyingcocker.co.uk` | `/etc/nginx/sites-enabled/ob.theflyingcocker.co.uk` | `/var/www/ob` | Obsidian in Docker, `127.0.0.1:3000` | `/couchdb/` → CouchDB in Docker, `127.0.0.1:5984` |
+| `wf.theflyingcocker.co.uk` | `/etc/nginx/sites-enabled/wf.theflyingcocker.co.uk` | `/var/www/wf` | n8n in Docker, `127.0.0.1:5678` | `/app/webhook/` and `/app/webhook-test/` have their own rule *(probably open to outside callers, for n8n webhooks — unconfirmed)* |
 
-```
-/var/www/html/
-  index.html                 <- login page (Firebase email/password sign-in)
-  members.html               <- protected page; loads private content from Firestore
-  assets/
-    firebase-config.js       <- Firebase web config (public by design)
-    img/portrait.jpg         <- the login portrait
-  index.html.mockup.bak      <- backup of the original mockup (not served as a page)
-```
+Other nginx snippets: `/etc/nginx/snippets/fc-admin-gate.conf` *(contents not yet read)*.
 
-Any new protected sub-pages (e.g. `events.html`) go in `/var/www/html/` too, and
-must include the same "redirect to login if not signed in" check as `members.html`.
+## Single sign-on (how one login covers every subdomain)
+
+1. The visitor logs in on `www.` (`index.html`) with Firebase email/password.
+2. `index.html` sends the Firebase ID token to `POST /auth/session`. The
+   **fc-auth** service turns it into an `fc_session` cookie that is valid on
+   every `*.theflyingcocker.co.uk` address.
+3. On `ob.` and `wf.`, nginx checks each request with
+   `auth_request` → `location = /_auth` → `http://127.0.0.1:8787/auth/verify`
+   (204 = signed in, 401 = not).
+4. If not signed in, `location @fc_login` redirects to
+   `https://www.theflyingcocker.co.uk/?next=https://<host><path>`.
+   `index.html` sends the visitor back to `next` after login. It only accepts
+   `https://*.theflyingcocker.co.uk` addresses.
+5. Sign out on `members.html` calls `POST /auth/logout` (clears the cookie) and
+   signs out of Firebase.
+
+**fc-auth service**
+- Code: `/opt/fc-auth/server.js` (Node, listens on `127.0.0.1:8787` only).
+- Unit file: `/opt/fc-auth/fc-auth.service` (systemd service name is probably `fc-auth`).
+- Endpoints: `POST /auth/session` (body `{"idToken": "..."}`),
+  `POST /auth/logout`, `GET /auth/verify`.
+- POSTs are refused (403) unless the `Origin` header is the allowed origin, which
+  is the `www.` site. **Log in at `https://www.theflyingcocker.co.uk`, not the
+  address without `www`.**
+- `/opt/fc-auth/service-account.json` is a Firebase **secret key**. Never print
+  it, copy it or commit it.
+
+## Firebase
+
+- Project id: `theflyingcocker`. Sign-in: Email/Password. Public sign-up is off.
+  Members are added in Firebase console → Authentication → Users.
+- Members-page content: Firestore `members/home`, fields `heading`, `body`.
+- `firestore.rules`: `members` readable only when signed in. No writes allowed.
+
+---
+
+## Which files are in GitHub (and which are NOT)
+
+Repo `4b4z7d8txh-lgtm/theflyingcocker`, branch `claude/landing-page-login-rghgnd`.
+
+| On the server | In GitHub? |
+|---|---|
+| `/var/www/html/index.html` (login) | Yes |
+| `/var/www/html/members.html` (menu: Vault, Workflows, Minecraps) | Yes |
+| `/var/www/html/assets/firebase-config.js`, `assets/img/portrait.jpg` | Yes |
+| `/var/www/html/minecraps.html` | **No — server only** |
+| `/var/www/html/index.html.mockup.bak` (old mockup) | No |
+| `/var/www/ob/index.html` + `assets/` (vault landing page, has "Open vault" link to `/app/`) | **No — server only** |
+| `/var/www/wf/index.html` + `assets/` (workflows landing page) | **No — server only** |
+| `/opt/fc-auth/*`, nginx config | **No — server only** |
+
+**Rule: before deploying a file from GitHub, make sure the server's copy
+isn't newer or different.** On 2026-11-05, a deploy overwrote server-only
+versions of `index.html` and `members.html`. That broke the single sign-on and
+removed the menu links until both were rebuilt. Bring any server-only page into
+the repo before changing it.
 
 ---
 
 ## Deploying changes
 
-All site changes are committed to GitHub first, then pulled onto the server.
-
-- **Repo:** `4b4z7d8txh-lgtm/theflyingcocker`
-- **Branch:** `claude/landing-page-login-rghgnd`
-- Because the repo files are publicly readable, the server downloads them with
-  `curl` from the raw GitHub URL — no keys or passwords needed.
-
-### To deploy (run on the server, connected as `root`)
-
-Edit the `FILES` line to list exactly the files you changed or added, then paste
-the whole block:
+Pushing to GitHub does **not** update the live site. Run this on the server as
+`root` (single line; edit the file list):
 
 ```bash
-cd /var/www/html
-BASE="https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/landing-page-login-rghgnd"
-
-# List the files to (re)download — add new sub-pages here as you create them:
-FILES="index.html members.html assets/firebase-config.js assets/img/portrait.jpg"
-
-for f in $FILES; do
-  mkdir -p "$(dirname "$f")"
-  curl -fsSL "$BASE/$f" -o "$f" && echo "updated $f" || echo "FAILED $f"
-done
-
-# Fix ownership and permissions
-chown -R deployuser:www-data /var/www/html
-find /var/www/html -type d -exec chmod 755 {} \;
-find /var/www/html -type f -exec chmod 644 {} \;
-
-echo "Done. Current files:"; ls -laR /var/www/html
+cd /var/www/html && for f in index.html members.html; do curl -fsSL "https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/landing-page-login-rghgnd/$f" -o "$f" && echo "updated $f" || echo "FAILED $f"; done; chown deployuser:www-data index.html members.html; chmod 644 index.html members.html; echo Done
 ```
 
-### After deploying
-- Test in a **private/incognito window** (avoids seeing a cached old page).
-- Nginx serves the new files immediately — no restart needed.
-- If a page looks stale, hard-refresh with `Ctrl+F5`.
-
-> Note: pushing to GitHub alone does **not** update the live site. You must run
-> the deploy block on the server for changes to appear.
+Then test in a **private/incognito tab** (phones cache pages heavily).
 
 ---
 
-## Authentication (Firebase) — reference
+## Open items
 
-- **Firebase project id:** `theflyingcocker`
-- **Sign-in:** Email/Password. Public sign-up is **disabled** — only the owner
-  creates accounts in Firebase console → Authentication → Users.
-- **Private content:** Firestore collection `members`, document `home`, string
-  fields `heading` and `body`. `members.html` loads it after login.
-- **Firestore rules** (`firestore.rules`): the `members` content is readable only
-  when signed in; all writes and everything else are denied.
-- If a login ever errors with **"unauthorized domain,"** add
-  `theflyingcocker.co.uk` (and `www.`) in Firebase console → Authentication →
-  Settings → Authorized domains.
+1. **Remove the "Flying Cocker" name and portrait** from `/var/www/ob/index.html`
+   and `/var/www/wf/index.html` (owner wants it gone from every page). Bring both
+   pages into the repo first.
+2. **Double login on the vault:** after the SSO login, the Obsidian container
+   asks for its own password *(probably the container's built-in login —
+   unconfirmed)*. The owner wants a single login.
+3. **Vault opens on Obsidian's Quick Start, not the owner's notes.** CouchDB on
+   `ob.` suggests the phone syncs with the **Self-hosted LiveSync** plugin
+   *(unconfirmed — ask the owner)*. Fix: in the Obsidian at `ob./app/`, install
+   Self-hosted LiveSync and connect it to the same CouchDB, database and
+   passphrase as the phone. The notes then download. Don't edit the Quick Start
+   vault before syncing.
+4. Security hardening: ufw firewall, key-only SSH, `unattended-upgrades`.
+5. Optionally automate deploys (e.g. a deploy key + script instead of manual `curl`).
 
----
-
-## Still to do (not done yet)
-
-1. **Deploy workflow** — the `curl` steps above are manual; could be scripted or
-   automated later.
-2. **Security hardening** — firewall (ufw), SSH hardening (key-only login,
-   disable root password login), and automatic security updates
-   (`unattended-upgrades`). Do this soon: the server is exposed to the internet.
-3. Consider making the GitHub repo private and switching the server to a
-   read-only **deploy key** instead of public `curl` (optional).
-
----
-
-## Handy checks (all read-only)
+## Handy read-only checks
 
 ```bash
-# Is Nginx happy?
-nginx -t && systemctl status nginx --no-pager
-
-# What's in the web root?
-ls -laR /var/www/html
-
-# Recent Nginx errors (last 30 lines)
+nginx -t; systemctl status nginx --no-pager | head -5
+nginx -T 2>/dev/null | grep -E "server_name|location|proxy_pass|root "
+ss -ltnp | grep -E ":8787|:3000|:5984|:5678"
+docker ps
+ls -la /var/www/html /var/www/ob /var/www/wf
 tail -n 30 /var/log/nginx/error.log
-
-# Is HTTPS certificate current / when does it renew?
-certbot certificates
 ```

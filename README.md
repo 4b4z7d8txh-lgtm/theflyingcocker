@@ -12,7 +12,9 @@ lives in Firestore and is released only to a signed-in user.
 | `index.html` | The plain login page (username + password only), wired to Firebase sign-in. |
 | `members.html` | The members area — verifies the login and loads private content from Firestore. |
 | `assets/firebase-config.js` | Your Firebase project config (you paste this in — see SETUP.md). |
-| `assets/img/portrait.jpg` | Portrait image (no longer shown on the login page). |
+| `assets/img/portrait.jpg` | Portrait image (no longer shown on any page). |
+| `VPS-SETUP.md` | **How the live server is set up** (subdomains, single sign-on, deploy). |
+| `CLAUDE.md` | Notes Claude reads automatically at the start of each session. |
 | `firestore.rules` | Security rules that protect the members content on the server. |
 | `SETUP.md` | **Start here** — step-by-step Firebase setup (about 15 min, no coding). |
 
