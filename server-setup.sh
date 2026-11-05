@@ -5,7 +5,7 @@
 # Does everything in SUBDOMAINS.md in one go, so it can be started with a
 # single pasted line (handy from a phone SSH app):
 #
-#   curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/wf-ob-landing-pages-2zcq7f/server-setup.sh -o /root/fc-setup.sh && bash /root/fc-setup.sh
+#   curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/main/server-setup.sh -o /root/fc-setup.sh && bash /root/fc-setup.sh
 #
 # Safe to run again: finished steps are skipped or simply refreshed.
 # Run as root on the VPS.
@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-BRANCH="claude/wf-ob-landing-pages-2zcq7f"
+BRANCH="main"
 BASE="https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/$BRANCH"
 KEY=/opt/fc-auth/service-account.json
 export DEBIAN_FRONTEND=noninteractive

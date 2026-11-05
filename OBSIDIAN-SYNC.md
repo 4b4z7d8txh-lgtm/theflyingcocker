@@ -28,7 +28,7 @@
 Paste this one line into SSH as `root`:
 
 ```
-curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/wf-ob-landing-pages-2zcq7f/obsidian-sync-setup.sh -o /root/ob-sync-setup.sh && bash /root/ob-sync-setup.sh
+curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/main/obsidian-sync-setup.sh -o /root/ob-sync-setup.sh && bash /root/ob-sync-setup.sh
 ```
 
 It (`obsidian-sync-setup.sh`):

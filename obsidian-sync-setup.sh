@@ -6,7 +6,7 @@
 # Obsidian phone app and the browser Obsidian can sync with the Self-hosted
 # LiveSync plugin, then sets up nightly backups. Run as root:
 #
-#   curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/wf-ob-landing-pages-2zcq7f/obsidian-sync-setup.sh -o /root/ob-sync-setup.sh && bash /root/ob-sync-setup.sh
+#   curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/main/obsidian-sync-setup.sh -o /root/ob-sync-setup.sh && bash /root/ob-sync-setup.sh
 #
 # 1. Applies the CouchDB settings LiveSync needs, and creates a dedicated
 #    sync account (a CouchDB admin, as LiveSync needs to rebuild the database)

@@ -20,7 +20,8 @@ lives in Firestore and is released only to a signed-in user.
 | `assets/img/portrait.jpg` | Portrait image (no longer shown on any page). |
 | `firestore.rules` | Security rules that protect the members content on the server. |
 | `SETUP.md` | Firebase setup (about 15 min, no coding). |
-| `VPS-SETUP.md` | How the live site is hosted on the VPS, and how to deploy changes. |
+| `VPS-SETUP.md` | **Start here for the server:** how the live site is hosted, the subdomains, single sign-on, and deploying. |
+| `CLAUDE.md` | Notes Claude reads automatically at the start of each session. |
 | `subdomains/wf/index.html` | Landing page for `wf.theflyingcocker.co.uk` (n8n workflows). |
 | `subdomains/ob/index.html` | Landing page for `ob.theflyingcocker.co.uk` (Obsidian vault in the browser). |
 | `subdomains/shared/landing.css` | Styling shared by the two subdomain landing pages. |

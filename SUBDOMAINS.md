@@ -71,7 +71,7 @@ change the `href="/app/"` line (marked `APP_URL`) in that page's `index.html`.
 > second one:
 >
 > ```bash
-> curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/claude/wf-ob-landing-pages-2zcq7f/server-setup.sh -o /root/fc-setup.sh && bash /root/fc-setup.sh
+> curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/main/server-setup.sh -o /root/fc-setup.sh && bash /root/fc-setup.sh
 > ```
 
 Run everything below **on the VPS as `root`** unless a step says otherwise.
@@ -102,7 +102,7 @@ commit it to GitHub.
 apt update && apt install -y nodejs npm
 useradd --system --no-create-home --shell /usr/sbin/nologin fcauth
 
-BRANCH="claude/wf-ob-landing-pages-2zcq7f"
+BRANCH="main"
 BASE="https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/$BRANCH"
 mkdir -p /opt/fc-auth && cd /opt/fc-auth
 for f in server.js package.json fc-auth.service; do
@@ -324,7 +324,7 @@ certbot --nginx -d wf.theflyingcocker.co.uk -d ob.theflyingcocker.co.uk
 Same `curl` approach as the main site ([VPS-SETUP.md](VPS-SETUP.md)).
 
 ```bash
-BRANCH="claude/wf-ob-landing-pages-2zcq7f"
+BRANCH="main"
 BASE="https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/$BRANCH"
 
 # Main site: the login + members pages now set the sign-on cookie
