@@ -17,3 +17,12 @@ Working rules for this project:
 - Never ask the owner to print `/opt/fc-auth/service-account.json` or any other secret.
 - When you learn something new about the server, update VPS-SETUP.md in the
   same change.
+
+At the **start** of a chat: check `git branch -r` for `claude/...` branches
+with commits that aren't in `main`
+(`git log origin/main..origin/<branch> --oneline`). If you find any, tell
+the owner and offer to bring that work into `main` first.
+
+At the **end** of a chat, once the work is done: remind the owner to type
+**`/wrap-up`**. That skill (`.claude/skills/wrap-up/`) updates the docs and
+merges this chat's work into `main`.

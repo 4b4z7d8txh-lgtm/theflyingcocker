@@ -22,6 +22,7 @@ lives in Firestore and is released only to a signed-in user.
 | `SETUP.md` | Firebase setup (about 15 min, no coding). |
 | `VPS-SETUP.md` | **Start here for the server:** how the live site is hosted, the subdomains, single sign-on, and deploying. |
 | `CLAUDE.md` | Notes Claude reads automatically at the start of each session. |
+| `.claude/skills/wrap-up/` | The `/wrap-up` command: type it at the end of a chat to save the work into `main`. |
 | `subdomains/wf/index.html` | Landing page for `wf.theflyingcocker.co.uk` (n8n workflows). |
 | `subdomains/ob/index.html` | Landing page for `ob.theflyingcocker.co.uk` (Obsidian vault in the browser). |
 | `subdomains/shared/landing.css` | Styling shared by the two subdomain landing pages. |
