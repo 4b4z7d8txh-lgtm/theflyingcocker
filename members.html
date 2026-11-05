@@ -45,6 +45,13 @@
     }
     .body { color: #4a4238; line-height: 1.6; white-space: pre-wrap; max-width: 640px; }
     .muted { color: #a99c88; }
+    .links { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0 0; padding: 0; list-style: none; }
+    .links a {
+      display: inline-block; padding: 12px 20px; border-radius: 10px;
+      background: #ffffff; border: 1px solid #e4d9c9; color: #2c2620;
+      font-weight: 500; text-decoration: none;
+    }
+    .links a:hover { border-color: #c15f3c; color: #c15f3c; }
     .footer { text-align: center; padding: 24px; color: #a99c88; font-size: 13px; }
 
     /* Nothing private is shown until we've confirmed the user is signed in. */
@@ -67,6 +74,11 @@
       <p class="eyebrow">Members area</p>
       <h1 id="heading">Welcome</h1>
       <div id="body" class="body muted">Loading…</div>
+
+      <!-- Links to the other parts of the site. Add one <li> per subdomain. -->
+      <ul class="links">
+        <li><a href="https://ob.theflyingcocker.co.uk/">Vault</a></li>
+      </ul>
     </main>
 
     <footer class="footer">Members area</footer>
