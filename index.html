@@ -57,9 +57,44 @@
     const error = document.getElementById('error');
     const button = form.querySelector('button');
 
-    // If already signed in, skip straight to the members area.
-    onAuthStateChanged(auth, (user) => {
-      if (user) window.location.replace('members.html');
+    // Where to go after login. The subdomains (ob., wf.) send people here with
+    // ?next=<address they wanted>. Only our own sites are accepted, so this
+    // page can't be used to bounce someone to a stranger's website.
+    function destination() {
+      const next = new URLSearchParams(location.search).get('next');
+      if (next) {
+        try {
+          const u = new URL(next);
+          if (u.protocol === 'https:' &&
+              (u.hostname === 'theflyingcocker.co.uk' ||
+               u.hostname.endsWith('.theflyingcocker.co.uk'))) {
+            return u.href;
+          }
+        } catch (e) { /* ignore a malformed address */ }
+      }
+      return 'members.html';
+    }
+
+    // Turn the Firebase login into the fc_session cookie that ob. and wf.
+    // check (handled by the fc-auth service on the server, at /auth/session).
+    async function startSiteSession(user) {
+      const idToken = await user.getIdToken();
+      const res = await fetch('/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      });
+      if (!res.ok) throw new Error('session ' + res.status);
+    }
+
+    let busy = false;
+
+    // If already signed in, refresh the cookie and carry on to the destination.
+    onAuthStateChanged(auth, async (user) => {
+      if (!user || busy) return;
+      busy = true;
+      try { await startSiteSession(user); } catch (e) { /* members page still works */ }
+      window.location.replace(destination());
     });
 
     form.addEventListener('submit', async (e) => {
@@ -68,12 +103,14 @@
       const email = document.getElementById('fc-user').value.trim();
       const password = document.getElementById('fc-pass').value;
 
+      busy = true;
       button.disabled = true;
       button.textContent = 'Signing in…';
+      let cred;
       try {
-        await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = 'members.html';
+        cred = await signInWithEmailAndPassword(auth, email, password);
       } catch (err) {
+        busy = false;
         // Show one generic message so we don't reveal which field was wrong.
         error.textContent = 'Incorrect username or password.';
         error.hidden = false;
@@ -82,7 +119,10 @@
         pass.focus();
         button.disabled = false;
         button.textContent = 'Log in';
+        return;
       }
+      try { await startSiteSession(cred.user); } catch (e) { /* members page still works */ }
+      window.location.href = destination();
     });
   </script>
 </body>

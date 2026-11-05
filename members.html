@@ -79,6 +79,7 @@
       <ul class="links">
         <li><a href="https://ob.theflyingcocker.co.uk/">Vault</a></li>
         <li><a href="https://wf.theflyingcocker.co.uk/">Workflows</a></li>
+        <li><a href="minecraps.html">Minecraps</a></li>
       </ul>
     </main>
 
@@ -136,6 +137,8 @@
     });
 
     document.getElementById('signout').addEventListener('click', async () => {
+      // Also end the ob. / wf. session cookie.
+      try { await fetch('/auth/logout', { method: 'POST' }); } catch (e) { /* ignore */ }
       await signOut(auth);
       window.location.href = 'index.html';
     });
