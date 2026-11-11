@@ -6,6 +6,7 @@ Two extra sites on the same Fasthosts VPS as the main website:
 |-----------|------------|--------------|----------------|
 | `wf.theflyingcocker.co.uk` | **W**ork**f**lows — n8n automations | `/` | `/app/` (n8n editor) |
 | `ob.theflyingcocker.co.uk` | **Ob**sidian vault in the browser | `/` | `/app/` (Obsidian desktop, streamed) |
+| `zo.theflyingcocker.co.uk` | **Zo**tero file sync (WebDAV) | `/` | `/dav/` (own password, see [ZOTERO-SYNC.md](ZOTERO-SYNC.md)) |
 
 > Plain-language summary: each subdomain gets a small welcome page (from this
 > repo) at its front door. Behind the **Open** button, at `/app/`, Nginx hands the
