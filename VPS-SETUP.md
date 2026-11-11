@@ -45,7 +45,7 @@ Related guides in this repo:
 | `theflyingcocker.co.uk`, `www.` | `/etc/nginx/sites-enabled/default` | repo root → `/var/www/html` | — | `/auth/` → sign-on helper on `127.0.0.1:8787` (`/etc/nginx/snippets/fc-auth-endpoints.conf`) |
 | `ob.theflyingcocker.co.uk` | `/etc/nginx/sites-enabled/ob.theflyingcocker.co.uk` | `subdomains/ob/` → `/var/www/ob` | Obsidian in Docker, `127.0.0.1:3000` | `/couchdb/` → CouchDB in Docker, `127.0.0.1:5984` (LiveSync) |
 | `wf.theflyingcocker.co.uk` | `/etc/nginx/sites-enabled/wf.theflyingcocker.co.uk` | `subdomains/wf/` → `/var/www/wf` | n8n in Docker, `127.0.0.1:5678` | `/app/webhook/` and `/app/webhook-test/` have their own rule (n8n webhooks) |
-| `zo.theflyingcocker.co.uk` *(set up by `zotero-webdav-setup.sh`, live since 2026-11-11)* | `/etc/nginx/sites-enabled/zo.theflyingcocker.co.uk` | `subdomains/zo/` → `/var/www/zo` | — | `/dav/` → WebDAV server in Docker (`zotero-webdav`), `127.0.0.1:8090`, own password, members gate off (`/etc/nginx/snippets/fc-zotero-dav.conf`). Files in `/opt/zotero-webdav/data` |
+| `zo.theflyingcocker.co.uk` *(set up by `zotero-webdav-setup.sh`, live since 2026-11-11)* | `/etc/nginx/sites-enabled/zo.theflyingcocker.co.uk` | `subdomains/zo/` → `/var/www/zo` | Zotero in Docker (`zotero-web`), `127.0.0.1:3010` *(added by `zotero-web-setup.sh`, not yet run)* | `/dav/` → WebDAV server in Docker (`zotero-webdav`), `127.0.0.1:8090`, own password, members gate off (`/etc/nginx/snippets/fc-zotero-dav.conf`). Files in `/opt/zotero-webdav/data` |
 
 `subdomains/shared/landing.css` is deployed as `assets/landing.css` in
 `/var/www/ob`, `/var/www/wf` and `/var/www/zo`.
@@ -117,6 +117,9 @@ cd /var/www/zo && mkdir -p assets && curl -fsSL https://raw.githubusercontent.co
 
 Then test in a **private/incognito tab**, because phones cache pages heavily.
 
+**Gotcha:** every setup and deploy line downloads from `main`. If `curl` says
+**404**, that file isn't merged into `main` yet (run `/wrap-up` first).
+
 **Rule:** the repo must match the server. If a change is made directly on the
 server, put it in the repo too. Otherwise the next deploy silently overwrites it.
 This happened on 2026-11-05: a deploy from an out-of-date branch replaced the
@@ -155,11 +158,14 @@ server matches `main` again.
    (item 0) so the members menu shows **Library** *(unconfirmed whether done)*.
    Gotcha: the iPhone app's error `Zotero.AFResponseError error 1` meant the
    address was missing `/dav` and the zotero.org email was used as username.
+6b. **Zotero in the browser** (`zo.…/app/`, like the vault): run
+   `zotero-web-setup.sh` (ZOTERO-SYNC.md §7), then inside it sign in to
+   zotero.org and set WebDAV. Not run yet. It needs ~800 MB of memory.
 7. Later (owner's choice): rate limit or fail2ban on `zo.…/dav/` against
    password guessing — do it together with item 4.
 
 ## Handy read-only checks
 
 ```bash
-nginx -t; nginx -T 2>/dev/null | grep -E "server_name|location|proxy_pass|root "; ss -ltnp | grep -E ":8787|:3000|:5984|:5678|:8090"; docker ps; systemctl status fc-auth --no-pager | head -5; ls -la /var/www/html /var/www/ob /var/www/wf /var/www/zo
+nginx -t; nginx -T 2>/dev/null | grep -E "server_name|location|proxy_pass|root "; ss -ltnp | grep -E ":8787|:3000|:3010|:5984|:5678|:8090"; docker ps; free -h; systemctl status fc-auth --no-pager | head -5; ls -la /var/www/html /var/www/ob /var/www/wf /var/www/zo
 ```

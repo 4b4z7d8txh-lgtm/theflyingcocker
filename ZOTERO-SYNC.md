@@ -21,6 +21,7 @@
 | Address | What | Who gets in |
 |---|---|---|
 | `https://zo.theflyingcocker.co.uk/` | Landing page with the Zotero settings | Members (website login) |
+| `https://zo.theflyingcocker.co.uk/app/` | Zotero itself, in the browser (section 7) | Members (website login) |
 | `https://zo.theflyingcocker.co.uk/dav/` | The WebDAV folder Zotero uses | Username `zotero` + its own password (the Zotero app can't use the website login) |
 
 Only for the owner's own library (one account). Group libraries can't use
@@ -113,6 +114,36 @@ old copies at zotero.org → **Settings → Storage → Purge attachment files**
 3. Zotero desktop → **Verify Server** succeeds.
 4. Add a PDF on the laptop, sync → it opens on the phone.
 5. On the server (read-only): `ls /opt/zotero-webdav/data/zotero | head` shows `.zip` and `.prop` files.
+
+## 7. Zotero in the browser (`zo.…/app/`)
+
+The same idea as the vault: the real Zotero desktop program runs in Docker on
+the server (`lscr.io/linuxserver/zotero`, container `zotero-web`,
+`127.0.0.1:3010`, data in `/opt/zotero-web/config`) and shows in a browser
+tab. Members get in with the website login. It needs about 800 MB of memory.
+
+**Set up (once, after section 2).** Paste as `root`:
+
+```
+curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/main/zotero-web-setup.sh -o /root/zo-web-setup.sh && bash /root/zo-web-setup.sh
+```
+
+It starts the container, adds `/app/` to the zo. nginx site (snippet
+`/etc/nginx/snippets/fc-zotero-app.conf`, members gate on; the old site file
+is saved as `/root/zo-site-before-web.conf`) and deploys the landing page with
+the **Open the library** button. Safe to run again.
+
+**First time in the browser Zotero:** Edit → Settings → Sync → sign in with
+the zotero.org account, then File Syncing → WebDAV with the same settings as
+section 3 → **Verify Server** → green sync arrow. After that the whole library
+and its PDFs are there.
+
+Works best on a laptop; on a phone it's a full desktop program on a small
+screen, so the Zotero iPhone app is nicer there.
+
+Read-only check: `docker ps --filter name=zotero-web; docker logs --tail 20 zotero-web`
+
+Remove it (keeps its data): `cd /opt/zotero-web && docker compose down; sed -i '/fc-zotero-app.conf/d' /etc/nginx/sites-available/zo.theflyingcocker.co.uk; nginx -t && systemctl reload nginx`
 
 ---
 

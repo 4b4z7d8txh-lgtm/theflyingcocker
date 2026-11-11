@@ -31,6 +31,7 @@ lives in Firestore and is released only to a signed-in user.
 | `obsidian-sync-setup.sh` | Server setup for Obsidian sync (LiveSync via CouchDB) and nightly backups. |
 | `OBSIDIAN-SYNC.md` | How the phone + browser Obsidian sync and the backups work, step by step. |
 | `zotero-webdav-setup.sh` | One-line server setup for Zotero file sync (WebDAV) on `zo.` and its nightly backups. |
+| `zotero-web-setup.sh` | One-line server setup for Zotero in the browser at `zo.…/app/` (members only, see ZOTERO-SYNC.md §7). |
 | `ZOTERO-SYNC.md` | How the Zotero file sync works and how to set up Zotero on each device. |
 | `SUBDOMAINS.md` | How to run n8n and Obsidian on the VPS and serve the `wf.`/`ob.` subdomains. |
 | `MINECRAFT-SERVER.md` | How to run the Bedrock game server on the VPS (`mc.theflyingcocker.co.uk`). |
