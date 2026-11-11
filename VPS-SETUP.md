@@ -138,6 +138,9 @@ server matches `main` again.
    from every page. Confirm with the owner whether the body text counts.
 4. Security hardening: ufw firewall, key-only SSH, `unattended-upgrades`.
 5. Optional: automate deploys (deploy key + script).
+6. **Zotero file sync on `zo.`** (WebDAV): plan written in
+   [ZOTERO-SYNC-PLAN.md](ZOTERO-SYNC-PLAN.md), waiting for the owner's review.
+   Nothing is set up on the server yet.
 
 ## Handy read-only checks
 
