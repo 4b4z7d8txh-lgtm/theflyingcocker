@@ -25,10 +25,13 @@ lives in Firestore and is released only to a signed-in user.
 | `.claude/skills/wrap-up/` | The `/wrap-up` command: type it at the end of a chat to save the work into `main`. |
 | `subdomains/wf/index.html` | Landing page for `wf.theflyingcocker.co.uk` (n8n workflows). |
 | `subdomains/ob/index.html` | Landing page for `ob.theflyingcocker.co.uk` (Obsidian vault in the browser). |
-| `subdomains/shared/landing.css` | Styling shared by the two subdomain landing pages. |
+| `subdomains/zo/index.html` | Landing page for `zo.theflyingcocker.co.uk` (Zotero file sync settings). |
+| `subdomains/shared/landing.css` | Styling shared by the subdomain landing pages. |
 | `server-setup.sh` | One-line server setup for the `wf.`/`ob.` subdomains and sign-on (see SUBDOMAINS.md). |
 | `obsidian-sync-setup.sh` | Server setup for Obsidian sync (LiveSync via CouchDB) and nightly backups. |
 | `OBSIDIAN-SYNC.md` | How the phone + browser Obsidian sync and the backups work, step by step. |
+| `zotero-webdav-setup.sh` | One-line server setup for Zotero file sync (WebDAV) on `zo.` and its nightly backups. |
+| `ZOTERO-SYNC.md` | How the Zotero file sync works and how to set up Zotero on each device. |
 | `SUBDOMAINS.md` | How to run n8n and Obsidian on the VPS and serve the `wf.`/`ob.` subdomains. |
 | `MINECRAFT-SERVER.md` | How to run the Bedrock game server on the VPS (`mc.theflyingcocker.co.uk`). |
 
