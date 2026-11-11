@@ -5,12 +5,14 @@ changes. Server facts below were confirmed on the server on 2026-11-05 unless
 marked *(unconfirmed)*.
 
 > Plain-language summary: the website lives on a Linux server (a Fasthosts VPS).
-> Nginx serves three addresses: the main site (`www.`), the notes vault (`ob.`)
-> and workflows (`wf.`). One login on `www.` gets you into all three.
+> Nginx serves four addresses: the main site (`www.`), the notes vault (`ob.`),
+> workflows (`wf.`) and the Zotero library (`zo.`). One login on `www.` gets you
+> into all of them (Zotero's own file sync at `zo.…/dav/` has its own password).
 
 Related guides in this repo:
 - **[SUBDOMAINS.md](SUBDOMAINS.md)**: how `wf.`/`ob.`, Docker, nginx and the sign-on helper were set up.
 - **[OBSIDIAN-SYNC.md](OBSIDIAN-SYNC.md)**: phone + work-laptop sync (Self-hosted LiveSync via CouchDB) and backups.
+- **[ZOTERO-SYNC.md](ZOTERO-SYNC.md)**: Zotero attachment-file sync over WebDAV (`zo.`) and its backups.
 - **[MINECRAFT-SERVER.md](MINECRAFT-SERVER.md)**: the Bedrock game server (`mc.`).
 - **[SETUP.md](SETUP.md)**: Firebase setup.
 
@@ -43,16 +45,17 @@ Related guides in this repo:
 | `theflyingcocker.co.uk`, `www.` | `/etc/nginx/sites-enabled/default` | repo root → `/var/www/html` | — | `/auth/` → sign-on helper on `127.0.0.1:8787` (`/etc/nginx/snippets/fc-auth-endpoints.conf`) |
 | `ob.theflyingcocker.co.uk` | `/etc/nginx/sites-enabled/ob.theflyingcocker.co.uk` | `subdomains/ob/` → `/var/www/ob` | Obsidian in Docker, `127.0.0.1:3000` | `/couchdb/` → CouchDB in Docker, `127.0.0.1:5984` (LiveSync) |
 | `wf.theflyingcocker.co.uk` | `/etc/nginx/sites-enabled/wf.theflyingcocker.co.uk` | `subdomains/wf/` → `/var/www/wf` | n8n in Docker, `127.0.0.1:5678` | `/app/webhook/` and `/app/webhook-test/` have their own rule (n8n webhooks) |
+| `zo.theflyingcocker.co.uk` *(planned, set up by `zotero-webdav-setup.sh`)* | `/etc/nginx/sites-enabled/zo.theflyingcocker.co.uk` | `subdomains/zo/` → `/var/www/zo` | — | `/dav/` → WebDAV server in Docker (`zotero-webdav`), `127.0.0.1:8090`, own password, members gate off (`/etc/nginx/snippets/fc-zotero-dav.conf`). Files in `/opt/zotero-webdav/data` |
 
-`subdomains/shared/landing.css` is deployed as `assets/landing.css` in both
-`/var/www/ob` and `/var/www/wf`.
+`subdomains/shared/landing.css` is deployed as `assets/landing.css` in
+`/var/www/ob`, `/var/www/wf` and `/var/www/zo`.
 Also present: `/etc/nginx/snippets/fc-admin-gate.conf` (the members-only gate).
 
 ### What's in `/var/www/html`
 
 ```
 index.html                 <- login page (Firebase sign-in, then sign-on cookie, then ?next=)
-members.html               <- members home: nav (Home, Minecraps, Workflows, Vault) + Firestore content
+members.html               <- members home: nav (Home, Minecraps, Workflows, Vault, Library) + Firestore content
 minecraps.html             <- members page: family Minecraft server info
 assets/firebase-config.js  <- Firebase web config (public by design)
 assets/session.js          <- single sign-on: /auth/session, /auth/logout, safe ?next=
@@ -107,6 +110,11 @@ cd /var/www/html && for f in index.html members.html minecraps.html assets/sessi
 **Subdomain landing pages** (`ob` or `wf`): see SUBDOMAINS.md §8 for the
 exact source → destination paths.
 
+**`zo.` landing page:**
+```bash
+cd /var/www/zo && mkdir -p assets && curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/main/subdomains/zo/index.html -o index.html && curl -fsSL https://raw.githubusercontent.com/4b4z7d8txh-lgtm/theflyingcocker/main/subdomains/shared/landing.css -o assets/landing.css && chown -R deployuser:www-data /var/www/zo && echo Done
+```
+
 Then test in a **private/incognito tab**, because phones cache pages heavily.
 
 **Rule:** the repo must match the server. If a change is made directly on the
@@ -138,12 +146,16 @@ server matches `main` again.
    from every page. Confirm with the owner whether the body text counts.
 4. Security hardening: ufw firewall, key-only SSH, `unattended-upgrades`.
 5. Optional: automate deploys (deploy key + script).
-6. **Zotero file sync on `zo.`** (WebDAV): plan written in
-   [ZOTERO-SYNC-PLAN.md](ZOTERO-SYNC-PLAN.md), waiting for the owner's review.
-   Nothing is set up on the server yet.
+6. **Zotero file sync on `zo.`** (WebDAV): built in the repo (2026-11-11),
+   **not yet on the server.** To do: add the DNS A record `zo`, run the setup
+   line in ZOTERO-SYNC.md §2, set up Zotero on laptop and iPhone (§3–4), then
+   run the main-site deploy so the members menu shows **Library**. Then remove
+   *(planned …)* from the subdomain table above.
+7. Later (owner's choice): rate limit or fail2ban on `zo.…/dav/` against
+   password guessing — do it together with item 4.
 
 ## Handy read-only checks
 
 ```bash
-nginx -t; nginx -T 2>/dev/null | grep -E "server_name|location|proxy_pass|root "; ss -ltnp | grep -E ":8787|:3000|:5984|:5678"; docker ps; systemctl status fc-auth --no-pager | head -5; ls -la /var/www/html /var/www/ob /var/www/wf
+nginx -t; nginx -T 2>/dev/null | grep -E "server_name|location|proxy_pass|root "; ss -ltnp | grep -E ":8787|:3000|:5984|:5678|:8090"; docker ps; systemctl status fc-auth --no-pager | head -5; ls -la /var/www/html /var/www/ob /var/www/wf /var/www/zo
 ```

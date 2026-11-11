@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library</title>
+  <meta name="description" content="Zotero file sync — research PDFs kept on our own server." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,500&family=Work+Sans:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="assets/landing.css" />
+  <style>
+    /* The library takes a brick-red accent (a nod to Zotero) within the site palette. */
+    :root { --accent: #a8323a; --accent-hover: #8c272e; --accent-soft: rgba(168,50,58,0.11); }
+    .settings { margin: 0; display: grid; gap: 14px; }
+    .settings div { border-bottom: 1px solid #efe7db; padding-bottom: 12px; }
+    .settings div:last-child { border-bottom: 0; padding-bottom: 0; }
+    .settings dt { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #a99c88; margin-bottom: 4px; }
+    .settings dd { margin: 0; font-size: 15px; color: #2c2620; overflow-wrap: anywhere; }
+    .settings code { background: #f4ede2; border-radius: 5px; padding: 2px 6px; color: var(--accent); font-size: 14px; }
+    .settings .hint { display: block; margin-top: 4px; font-size: 12.5px; color: #8a7f70; }
+    .settings-title { font-family: "Newsreader", Georgia, serif; font-size: 19px; margin: 0 0 16px; color: #2c2620; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="topbar-link" href="https://www.theflyingcocker.co.uk/members.html">Members home &rarr;</a>
+    </div>
+  </header>
+
+  <main class="content" role="main">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">The library</p>
+        <h1>Research files, <em>kept on our own server</em>.</h1>
+        <p class="lead">
+          <strong>Zotero</strong> keeps your references in sync through zotero.org,
+          and the PDFs and attachments sync here instead, with no storage plan
+          to pay for. Set it up once on each device and Zotero does the rest.
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://www.zotero.org/download/" target="_blank" rel="noopener">
+            Get Zotero
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="https://www.zotero.org/support/sync" target="_blank" rel="noopener">Zotero sync help</a>
+        </div>
+        <p class="private-note">Private &middot; members only. The file sync has its own password.</p>
+      </div>
+
+      <!-- The three settings to type into Zotero -->
+      <div class="visual">
+        <p class="settings-title">Zotero &rsaquo; Settings &rsaquo; Sync</p>
+        <dl class="settings">
+          <div>
+            <dt>Sync attachment files using</dt>
+            <dd><code>WebDAV</code></dd>
+          </div>
+          <div>
+            <dt>URL</dt>
+            <dd><code>https://</code> + <code>zo.theflyingcocker.co.uk/dav</code></dd>
+          </div>
+          <div>
+            <dt>Username</dt>
+            <dd><code>zotero</code></dd>
+          </div>
+          <div>
+            <dt>Password</dt>
+            <dd>From the server
+              <span class="hint">cat /opt/zotero-webdav/credentials.txt</span></dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature">
+        <div class="icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3.5h3v13H4zM8.5 3.5h3v13h-3z"/><path d="M13 4.2l2.8-.8 3 12.4-2.8.8z"/></svg>
+        </div>
+        <h2>Library via zotero.org</h2>
+        <p>Items, notes, tags and collections still sync with your free zotero.org account.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h7l3 3v11H5z"/><path d="M12 3v3h3M8 10h4M8 13h4"/></svg>
+        </div>
+        <h2>Files on our server</h2>
+        <p>PDFs and snapshots sync here over WebDAV, on the laptop and in the iPhone app.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5l6 2.5v4.5c0 4-2.6 6.8-6 8-3.4-1.2-6-4-6-8V5z"/><path d="M7.5 10l2 2 3.5-4"/></svg>
+        </div>
+        <h2>Backed up nightly</h2>
+        <p>A copy is taken every night and kept for 30 days.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">zo.theflyingcocker.co.uk</footer>
+</body>
+</html>
