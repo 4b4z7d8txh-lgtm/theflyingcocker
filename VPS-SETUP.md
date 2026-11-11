@@ -117,6 +117,9 @@ cd /var/www/zo && mkdir -p assets && curl -fsSL https://raw.githubusercontent.co
 
 Then test in a **private/incognito tab**, because phones cache pages heavily.
 
+**Gotcha:** every setup and deploy line downloads from `main`. If `curl` says
+**404**, that file isn't merged into `main` yet (run `/wrap-up` first).
+
 **Rule:** the repo must match the server. If a change is made directly on the
 server, put it in the repo too. Otherwise the next deploy silently overwrites it.
 This happened on 2026-11-05: a deploy from an out-of-date branch replaced the
