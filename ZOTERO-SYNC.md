@@ -87,9 +87,17 @@ minutes.
 
 ## 4. Zotero on iPhone / iPad
 
-Zotero app → **Settings** (gear) → **Account** → **File Syncing**: choose
-**WebDAV**, enter the same URL (`https://zo.theflyingcocker.co.uk/dav` if
-there's no separate https choice), username and password, then **Verify**.
+Zotero app → **Settings** (gear) → **Account** → **File Syncing**:
+
+1. **Sync attachment files in My Library using:** **WebDAV**.
+2. The address line shows `https://` before the box and `/zotero/` after it.
+   In the box type **`zo.theflyingcocker.co.uk/dav`** (don't forget `/dav`).
+3. **Username:** **`zotero`**, not your zotero.org email.
+4. **Password:** from ALL DONE (not your zotero.org password).
+5. **Verify Server**.
+
+`Zotero.AFResponseError error 1` on Verify Server usually means `/dav` is
+missing from the address, or the username/password is wrong.
 
 ## 5. Moving files off zotero.org storage
 
