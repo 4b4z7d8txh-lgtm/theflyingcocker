@@ -19,8 +19,9 @@ Related guides in this repo:
 ## Source of truth
 
 - **Repo:** `4b4z7d8txh-lgtm/theflyingcocker`, branch **`main`**.
-- `main` contains everything from the older `claude/...` branches. Those
-  branches are history only: **don't deploy from them.**
+- `main` is the GitHub default branch and the only branch. The old
+  `claude/...` branches were checked (nothing missing from `main`) and
+  deleted on 2026-11-11. **Only deploy from `main`.**
 - The server downloads files from the public raw GitHub URL with `curl`. No
   keys are needed.
 
@@ -120,8 +121,7 @@ server matches `main` again.
 ## Open items
 
 0. **Finish the switch to `main` (from the 2026-11-05 chat):**
-   - On GitHub, make `main` the default branch (Settings → General → Default
-     branch). Until then, new chats may start from an old branch.
+   - ~~Make `main` the GitHub default branch~~ — done 2026-11-11.
    - Deploy `main` to `/var/www/html` once (command under "Deploying changes").
      Until then, the live `index.html` and `members.html` are the rebuilt
      versions from `claude/landing-page-login-rghgnd` (they work, but differ from
