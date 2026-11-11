@@ -45,7 +45,7 @@ Related guides in this repo:
 | `theflyingcocker.co.uk`, `www.` | `/etc/nginx/sites-enabled/default` | repo root → `/var/www/html` | — | `/auth/` → sign-on helper on `127.0.0.1:8787` (`/etc/nginx/snippets/fc-auth-endpoints.conf`) |
 | `ob.theflyingcocker.co.uk` | `/etc/nginx/sites-enabled/ob.theflyingcocker.co.uk` | `subdomains/ob/` → `/var/www/ob` | Obsidian in Docker, `127.0.0.1:3000` | `/couchdb/` → CouchDB in Docker, `127.0.0.1:5984` (LiveSync) |
 | `wf.theflyingcocker.co.uk` | `/etc/nginx/sites-enabled/wf.theflyingcocker.co.uk` | `subdomains/wf/` → `/var/www/wf` | n8n in Docker, `127.0.0.1:5678` | `/app/webhook/` and `/app/webhook-test/` have their own rule (n8n webhooks) |
-| `zo.theflyingcocker.co.uk` *(planned, set up by `zotero-webdav-setup.sh`)* | `/etc/nginx/sites-enabled/zo.theflyingcocker.co.uk` | `subdomains/zo/` → `/var/www/zo` | — | `/dav/` → WebDAV server in Docker (`zotero-webdav`), `127.0.0.1:8090`, own password, members gate off (`/etc/nginx/snippets/fc-zotero-dav.conf`). Files in `/opt/zotero-webdav/data` |
+| `zo.theflyingcocker.co.uk` *(set up by `zotero-webdav-setup.sh`, live since 2026-11-11)* | `/etc/nginx/sites-enabled/zo.theflyingcocker.co.uk` | `subdomains/zo/` → `/var/www/zo` | — | `/dav/` → WebDAV server in Docker (`zotero-webdav`), `127.0.0.1:8090`, own password, members gate off (`/etc/nginx/snippets/fc-zotero-dav.conf`). Files in `/opt/zotero-webdav/data` |
 
 `subdomains/shared/landing.css` is deployed as `assets/landing.css` in
 `/var/www/ob`, `/var/www/wf` and `/var/www/zo`.
@@ -146,11 +146,15 @@ server matches `main` again.
    from every page. Confirm with the owner whether the body text counts.
 4. Security hardening: ufw firewall, key-only SSH, `unattended-upgrades`.
 5. Optional: automate deploys (deploy key + script).
-6. **Zotero file sync on `zo.`** (WebDAV): built in the repo (2026-11-11),
-   **not yet on the server.** To do: add the DNS A record `zo`, run the setup
-   line in ZOTERO-SYNC.md §2, set up Zotero on laptop and iPhone (§3–4), then
-   run the main-site deploy so the members menu shows **Library**. Then remove
-   *(planned …)* from the subdomain table above.
+6. **Zotero file sync on `zo.`** (WebDAV): live since 2026-11-11 — DNS added,
+   setup script ran, iPhone **Verify Server** OK. Still to do: set up Zotero
+   desktop the same way and let it upload the PDFs (~100 MB), check with
+   `ls /opt/zotero-webdav/data/zotero | wc -l; du -sh /opt/zotero-webdav/data`,
+   then open a PDF on the phone. Optional after that: purge the old
+   zotero.org file storage (ZOTERO-SYNC.md §5). Also run the main-site deploy
+   (item 0) so the members menu shows **Library** *(unconfirmed whether done)*.
+   Gotcha: the iPhone app's error `Zotero.AFResponseError error 1` meant the
+   address was missing `/dav` and the zotero.org email was used as username.
 7. Later (owner's choice): rate limit or fail2ban on `zo.…/dav/` against
    password guessing — do it together with item 4.
 
