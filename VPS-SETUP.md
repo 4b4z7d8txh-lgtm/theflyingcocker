@@ -13,6 +13,7 @@ Related guides in this repo:
 - **[SUBDOMAINS.md](SUBDOMAINS.md)**: how `wf.`/`ob.`, Docker, nginx and the sign-on helper were set up.
 - **[OBSIDIAN-SYNC.md](OBSIDIAN-SYNC.md)**: phone + work-laptop sync (Self-hosted LiveSync via CouchDB) and backups.
 - **[ZOTERO-SYNC.md](ZOTERO-SYNC.md)**: Zotero attachment-file sync over WebDAV (`zo.`) and its backups.
+- **[ZOTERO-OBSIDIAN.md](ZOTERO-OBSIDIAN.md)**: Zotero notes and highlights copied into the Obsidian vault every 15 minutes.
 - **[MINECRAFT-SERVER.md](MINECRAFT-SERVER.md)**: the Bedrock game server (`mc.`).
 - **[SETUP.md](SETUP.md)**: Firebase setup.
 
@@ -158,9 +159,19 @@ server matches `main` again.
    (item 0) so the members menu shows **Library** *(unconfirmed whether done)*.
    Gotcha: the iPhone app's error `Zotero.AFResponseError error 1` meant the
    address was missing `/dav` and the zotero.org email was used as username.
-6b. **Zotero in the browser** (`zo.…/app/`, like the vault): run
-   `zotero-web-setup.sh` (ZOTERO-SYNC.md §7), then inside it sign in to
-   zotero.org and set WebDAV. Not run yet. It needs ~800 MB of memory.
+   **Owner has no computer with Zotero desktop** (2026-11-12): PDFs upload
+   from the iPhone app instead, so the desktop step doesn't apply.
+6b. ~~Zotero in the browser~~ (`zo.…/app/`, `zotero-web-setup.sh`): **not
+   needed** — owner only wants Zotero on the phone (2026-11-12). Not run;
+   leave it unless asked.
+6c. **Zotero notes → Obsidian** (ZOTERO-OBSIDIAN.md, added 2026-11-12, not run
+   yet): needs item 1 done first, then a zotero.org key (library + notes
+   access, read-only) and the setup line `zotero-obsidian-setup.sh`. Runs
+   `/usr/local/bin/zotero-to-obsidian` every 15 min from
+   `/etc/cron.d/zotero-to-obsidian`, writes into
+   `/opt/obsidian/config/<vault>/Zotero/`. Key in
+   `/opt/zotero-obsidian/config.json` (secret, never print). Untested against
+   the real zotero.org yet (only a test copy of the API) — check the first run's log.
 7. Later (owner's choice): rate limit or fail2ban on `zo.…/dav/` against
    password guessing — do it together with item 4.
 
