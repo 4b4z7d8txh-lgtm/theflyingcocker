@@ -32,6 +32,9 @@ lives in Firestore and is released only to a signed-in user.
 | `OBSIDIAN-SYNC.md` | How the phone + browser Obsidian sync and the backups work, step by step. |
 | `zotero-webdav-setup.sh` | One-line server setup for Zotero file sync (WebDAV) on `zo.` and its nightly backups. |
 | `zotero-web-setup.sh` | One-line server setup for Zotero in the browser at `zo.…/app/` (members only, see ZOTERO-SYNC.md §7). |
+| `zotero-obsidian-setup.sh` | One-line server setup that copies Zotero notes and highlights into the Obsidian vault every 15 minutes. |
+| `zotero-to-obsidian.py` | The program that does that copy (installed as `/usr/local/bin/zotero-to-obsidian`). |
+| `ZOTERO-OBSIDIAN.md` | How the Zotero → Obsidian notes copy works and how to set it up. |
 | `ZOTERO-SYNC.md` | How the Zotero file sync works and how to set up Zotero on each device. |
 | `SUBDOMAINS.md` | How to run n8n and Obsidian on the VPS and serve the `wf.`/`ob.` subdomains. |
 | `MINECRAFT-SERVER.md` | How to run the Bedrock game server on the VPS (`mc.theflyingcocker.co.uk`). |
