@@ -141,8 +141,14 @@ server matches `main` again.
      Minecraps, Workflows, Vault), and confirm Vault and Workflows open.
 1. ~~Vault shows Obsidian's Quick Start~~ **Done 2026-11-13:** the browser
    Obsidian on `ob.` now syncs with the phone through LiveSync (see
-   OBSIDIAN-SYNC.md §3). Not yet checked: whether the nightly vault backup
-   (`/root/backups/obsidian`) is actually running.
+   OBSIDIAN-SYNC.md §3; setup choices: Join → compare time and take newer →
+   delete files deleted elsewhere). Gotchas: "Failed to parse setup URI" =
+   link damaged by the work mailbox; Obsidian's own ✕ quits the app on the
+   server (reopen: right-click the empty screen → Obsidian, or
+   `docker restart` the linuxserver/obsidian container). Leave by closing
+   the browser tab, then Sign out on the members page. Not yet checked:
+   whether the nightly vault backup (`/root/backups/obsidian`) is running
+   (`crontab -l | grep -i obsidian; ls -lt /root/backups/obsidian | head -4`).
 2. **Second password on the vault** (after the website login): probably the
    Obsidian container's own login *(unconfirmed)*. Owner wants one login.
 3. The ob./wf. landing pages and `minecraps.html` still mention "Flying Cocker"
@@ -165,7 +171,7 @@ server matches `main` again.
    needed** — owner only wants Zotero on the phone (2026-11-12). Not run;
    leave it unless asked.
 6c. **Zotero notes → Obsidian** (ZOTERO-OBSIDIAN.md, added 2026-11-12, not run
-   yet): needs item 1 done first, then a zotero.org key (library + notes
+   yet): item 1 is now done (2026-11-13), so this is unblocked. Needs then a zotero.org key (library + notes
    access, read-only) and the setup line `zotero-obsidian-setup.sh`. Runs
    `/usr/local/bin/zotero-to-obsidian` every 15 min from
    `/etc/cron.d/zotero-to-obsidian`, writes into
