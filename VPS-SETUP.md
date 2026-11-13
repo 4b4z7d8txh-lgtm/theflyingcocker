@@ -139,10 +139,10 @@ server matches `main` again.
      versions from `claude/landing-page-login-rghgnd` (they work, but differ from
      `main`). After deploying, check: log in at `www.`, see the top menu (Home,
      Minecraps, Workflows, Vault), and confirm Vault and Workflows open.
-1. **Vault shows Obsidian's Quick Start, not the phone's notes.** Do
-   OBSIDIAN-SYNC.md §3 (work laptop): create an empty vault in the browser
-   Obsidian, install Self-hosted LiveSync, use the phone's setup URI and
-   passphrase, and **fetch from the remote database**.
+1. ~~Vault shows Obsidian's Quick Start~~ **Done 2026-11-13:** the browser
+   Obsidian on `ob.` now syncs with the phone through LiveSync (see
+   OBSIDIAN-SYNC.md §3). Not yet checked: whether the nightly vault backup
+   (`/root/backups/obsidian`) is actually running.
 2. **Second password on the vault** (after the website login): probably the
    Obsidian container's own login *(unconfirmed)*. Owner wants one login.
 3. The ob./wf. landing pages and `minecraps.html` still mention "Flying Cocker"

@@ -84,9 +84,18 @@ cat /root/obsidian-sync/livesync-credentials.txt
    the default location (it's saved on the server, under `/config`).
 3. Install and enable **Self-hosted LiveSync** as on the phone.
 4. Choose **Use setup URI**, paste the URI from step 2.6 and its passphrase.
-   When asked, this is **not** the first device: **fetch from the remote
-   database**. (Or enter the same four details + the End-to-End passphrase by
-   hand.)
+   (Or enter the same four details + the End-to-End passphrase by hand.)
+   Choices that worked on 2026-11-13:
+   - Setup method → **Join** (never *Initialise*: it wipes the server copy).
+   - How to handle retrieved data → **compare time and take newer**.
+   - Files deleted on other devices → **delete them here too**.
+
+   **"Failed to parse setup URI"** means the link got damaged in transit. The
+   usual culprit is a work mailbox rewriting links. On the phone, copy it via
+   Settings → Self-hosted LiveSync → 🧙 Setup → *Copy the current settings to
+   a Setup URI* (or the command palette: *Copy settings as a new setup URI*).
+   Send it through a personal channel, check in Notepad that it is one
+   unbroken line starting with `obsidian://setuplivesync?settings=`, then paste.
 5. Your phone notes appear within a minute; edits sync both ways from now on.
 
 The browser Obsidian normally keeps running on the server, so it keeps syncing
