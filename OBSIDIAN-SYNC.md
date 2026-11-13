@@ -98,6 +98,14 @@ cat /root/obsidian-sync/livesync-credentials.txt
    unbroken line starting with `obsidian://setuplivesync?settings=`, then paste.
 5. Your phone notes appear within a minute; edits sync both ways from now on.
 
+**Leaving the browser vault:** close the browser **tab**, never Obsidian's own
+✕ (top-right). The ✕ quits Obsidian on the server, leaving an empty screen.
+To start it again, right-click the empty screen → Obsidian, or restart the
+container over SSH:
+`docker restart $(docker ps --format '{{.Names}} {{.Image}}' | grep -i 'linuxserver/obsidian' | awk '{print $1}')`.
+On the work laptop, finish with **Sign out** on the members page so the
+sign-on cookie for `ob.`/`wf.` is cleared.
+
 The browser Obsidian normally keeps running on the server, so it keeps syncing
 even when the laptop is closed — which is also what makes the plain-Markdown backup
 below always up to date.
