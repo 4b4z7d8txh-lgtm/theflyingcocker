@@ -23,6 +23,7 @@ lives in Firestore and is released only to a signed-in user.
 | `VPS-SETUP.md` | **Start here for the server:** how the live site is hosted, the subdomains, single sign-on, and deploying. |
 | `CLAUDE.md` | Notes Claude reads automatically at the start of each session. |
 | `.claude/skills/wrap-up/` | The `/wrap-up` command: type it at the end of a chat to save the work into `main`. |
+| `templates/wrap-up/SKILL.md` | General `/wrap-up` for **other** repos: copy it to `.claude/skills/wrap-up/SKILL.md` there. |
 | `subdomains/wf/index.html` | Landing page for `wf.theflyingcocker.co.uk` (n8n workflows). |
 | `subdomains/ob/index.html` | Landing page for `ob.theflyingcocker.co.uk` (Obsidian vault in the browser). |
 | `subdomains/zo/index.html` | Landing page for `zo.theflyingcocker.co.uk` (Zotero file sync settings). |
