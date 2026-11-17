@@ -104,7 +104,7 @@ The notes themselves are in the vault, so the nightly Obsidian backup
   lacks "notes access". Make a new one, then use the "new key" line above.
 - **Files are on the server but not on the phone:** the browser Obsidian
   isn't syncing. Open `ob.…/app/`, check LiveSync is on (OBSIDIAN-SYNC.md §3).
-  Read-only check that the files exist: `ls "/opt/obsidian/config/"*/Zotero | head`
+  Read-only check that the files exist: `ls /opt/obsidian/config/Desktop/Vault/Zotero | head`
 - **`SKIPPED (the zotero:end line was removed…)`**: put the line back (copy it
   from another Zotero note) or delete the file and run `--full`.
 - **A highlight is missing:** check the Zotero app has synced, then "Run now".

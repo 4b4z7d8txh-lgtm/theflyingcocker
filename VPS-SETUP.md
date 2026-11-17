@@ -175,7 +175,9 @@ server matches `main` again.
    access, read-only) and the setup line `zotero-obsidian-setup.sh`. Runs
    `/usr/local/bin/zotero-to-obsidian` every 15 min from
    `/etc/cron.d/zotero-to-obsidian`, writes into
-   `/opt/obsidian/config/<vault>/Zotero/`. Key in
+   `/opt/obsidian/config/Desktop/Vault/Zotero/` (the only vault, confirmed
+   2026-11-17; Obsidian/CouchDB containers are `obsidian-obsidian-1` and
+   `couchdb-for-obsidian`). Key in
    `/opt/zotero-obsidian/config.json` (secret, never print). Untested against
    the real zotero.org yet (only a test copy of the API) — check the first run's log.
 7. Later (owner's choice): rate limit or fail2ban on `zo.…/dav/` against
