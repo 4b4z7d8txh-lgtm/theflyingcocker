@@ -170,14 +170,24 @@ server matches `main` again.
 6b. ~~Zotero in the browser~~ (`zo.…/app/`, `zotero-web-setup.sh`): **not
    needed** — owner only wants Zotero on the phone (2026-11-12). Not run;
    leave it unless asked.
-6c. **Zotero notes → Obsidian** (ZOTERO-OBSIDIAN.md, added 2026-11-12, not run
-   yet): item 1 is now done (2026-11-13), so this is unblocked. Needs then a zotero.org key (library + notes
+6c. ~~Zotero notes → Obsidian~~ **Done 2026-11-17, working end to end** (ZOTERO-OBSIDIAN.md, added 2026-11-12): item 1 is now done (2026-11-13), so this is unblocked. Needs then a zotero.org key (library + notes
    access, read-only) and the setup line `zotero-obsidian-setup.sh`. Runs
    `/usr/local/bin/zotero-to-obsidian` every 15 min from
    `/etc/cron.d/zotero-to-obsidian`, writes into
-   `/opt/obsidian/config/<vault>/Zotero/`. Key in
+   `/opt/obsidian/config/Desktop/Vault/Zotero/` (the only vault, confirmed
+   2026-11-17; Obsidian/CouchDB containers are `obsidian-obsidian-1` and
+   `couchdb-for-obsidian`). Key in
    `/opt/zotero-obsidian/config.json` (secret, never print). Untested against
    the real zotero.org yet (only a test copy of the API) — check the first run's log.
+   **Ran 2026-11-17:** key OK, first run wrote `Zotero/HowtoTakeSmartNotes.md`,
+   cron runs every 15 min. The note didn't reach the phone because LiveSync's
+   **Sync mode** had become **"On events"** (both devices on LiveSync 1.0.50).
+   "On events" never sends files the Zotero program writes on the server, so
+   **Sync mode must be "LiveSync" on the website Obsidian and the phone.**
+   CouchDB log showed only connection checks, no `_changes`/`_bulk_docs`
+   (= no real sync). Fixed by setting Sync mode back to LiveSync on both and
+   running **Sync now** (the 1.0.x name for "Replicate now"); confirmed
+   working by the owner 2026-11-17.
 7. Later (owner's choice): rate limit or fail2ban on `zo.…/dav/` against
    password guessing — do it together with item 4.
 
