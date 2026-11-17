@@ -105,7 +105,7 @@ The notes themselves are in the vault, so the nightly Obsidian backup
 - **Files are on the server but not on the phone:** the browser Obsidian
   isn't syncing. First check Settings → Self-hosted LiveSync → 🔄 Sync
   settings → **Sync mode = LiveSync** on both the website Obsidian and the
-  phone ("On events" never sends the Zotero files), then **Replicate now**. Open `ob.…/app/`, check LiveSync is on (OBSIDIAN-SYNC.md §3).
+  phone ("On events" never sends the Zotero files), then **Sync now** (command list; older versions called it "Replicate now"). If it still won't sync: command **Review why synchronisation is paused** → **Resume synchronisation** (only once every device is on the same LiveSync version). Open `ob.…/app/`, check LiveSync is on (OBSIDIAN-SYNC.md §3).
   Read-only check that the files exist: `ls /opt/obsidian/config/Desktop/Vault/Zotero | head`
 - **`SKIPPED (the zotero:end line was removed…)`**: put the line back (copy it
   from another Zotero note) or delete the file and run `--full`.
